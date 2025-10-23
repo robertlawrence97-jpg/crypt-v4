@@ -124,15 +124,16 @@ const App = () => {
   useEffect(() => {
     if (modal === 'scanBarcode' || scan) {
       console.log('🎥 Scan modal opened, starting camera...');
-      startCameraStream();
+      // Small delay to ensure modal is fully rendered
+      const timer = setTimeout(() => {
+        startCameraStream();
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    } else {
+      // Modal closed, stop camera
+      stopCam();
     }
-    
-    // Cleanup: stop camera when modal closes
-    return () => {
-      if (modal !== 'scanBarcode' && !scan) {
-        stopCam();
-      }
-    };
   }, [modal, scan]);
 
   // Lock body scroll when keg history modal is open
@@ -263,41 +264,58 @@ const App = () => {
 
   const startBarcodeScanning = async () => {
     console.log('🔍 Starting real barcode scanning with ZXing');
+    
+    // Wait for video to be ready
+    if (!vid.current || !vid.current.srcObject) {
+      console.log('⏳ Video not ready yet, retrying...');
+      setTimeout(() => startBarcodeScanning(), 500);
+      return;
+    }
+    
     try {
       // Initialize the barcode reader
       if (!codeReader.current) {
         codeReader.current = new BrowserMultiFormatReader();
+        console.log('✅ ZXing reader initialized');
       }
 
+      console.log('📹 Starting continuous decode from video element');
+      
       // Start continuous scanning from video element
-      codeReader.current.decodeFromVideoElement(vid.current, (result, err) => {
-        if (result) {
-          const barcodeText = result.getText();
-          console.log('✅ Barcode detected:', barcodeText);
-          
-          // Play success beep
-          try {
-            const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjiR1/LMeSwFJHfH8N2QQAo=');
-            audio.play();
-          } catch (e) {
-            console.log('Beep failed:', e);
+      const controls = await codeReader.current.decodeFromVideoDevice(
+        undefined, // Use default video device
+        vid.current,
+        (result, err) => {
+          if (result) {
+            const barcodeText = result.getText();
+            console.log('✅ Barcode detected:', barcodeText);
+            
+            // Play success beep
+            try {
+              const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjiR1/LMeSwFJHfH8N2QQAo=');
+              audio.play();
+            } catch (e) {
+              console.log('Beep failed:', e);
+            }
+            
+            // Set the barcode value
+            setBc(barcodeText);
+            setErr('');
+            
+            // Auto-submit after short delay
+            setTimeout(() => {
+              stopCam();
+              submitBarcode(barcodeText);
+            }, 500);
           }
           
-          // Set the barcode value
-          setBc(barcodeText);
-          setErr('');
-          
-          // Auto-submit after short delay
-          setTimeout(() => {
-            stopCam();
-            submitBarcode(barcodeText);
-          }, 500);
+          if (err && !(err.name === 'NotFoundException')) {
+            console.error('Scan error:', err);
+          }
         }
-        
-        if (err && !(err.name === 'NotFoundException')) {
-          console.error('Scan error:', err);
-        }
-      });
+      );
+      
+      console.log('✅ Barcode scanning active');
     } catch (e) {
       console.error('❌ Barcode scanning error:', e);
       setErr('Barcode scanning failed: ' + e.message);
