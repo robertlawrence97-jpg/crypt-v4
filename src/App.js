@@ -1,6 +1,23 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Camera, Package, Truck, Users, BarChart3, Search, Plus, MapPin, AlertCircle, Check, X, Edit, Trash2, Save, QrCode, Home, FileText, Clock, DollarSign, TrendingUp, Filter, Download, Calendar, Wrench, Bell, TrendingDown, Archive, RefreshCw, Shield, Activity, Target, Layers, Cloud, Upload } from 'lucide-react';
 import { BrowserMultiFormatReader } from '@zxing/library';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAf3KJFgXz7i4UjryWQNGD2bH9uedTeYVY",
+  authDomain: "cryptkeeper-f695a.firebaseapp.com",
+  projectId: "cryptkeeper-f695a",
+  storageBucket: "cryptkeeper-f695a.firebasestorage.app",
+  messagingSenderId: "354790573765",
+  appId: "1:354790573765:web:365702abb10825b7d612ac"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 
 // Enhanced initial data with more realistic brewery operations
 const initialKegs = [
@@ -70,6 +87,7 @@ const App = () => {
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null); // { type: 'customer'|'product', item: object, index: number }
+  const [scannedBarcodeForInventory, setScannedBarcodeForInventory] = useState(''); // For inventory barcode scan
   const vid = useRef(null);
   const codeReader = useRef(null);
   const scanControlsRef = useRef(null); // Store ZXing controls for cleanup
@@ -99,6 +117,55 @@ const App = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [showKegHistory, setShowKegHistory] = useState(null); // keg id to show history for
   const [quickActionMenu, setQuickActionMenu] = useState(false);
+
+  // Firebase sync - Load data on mount and listen for changes
+  useEffect(() => {
+    const loadFromFirebase = async () => {
+      try {
+        // Load kegs
+        const kegsSnapshot = await getDocs(collection(db, 'kegs'));
+        if (!kegsSnapshot.empty) {
+          const firebaseKegs = kegsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setKegs(firebaseKegs);
+          localStorage.setItem('kegtracker_kegs', JSON.stringify(firebaseKegs));
+        }
+
+        // Load transactions
+        const transactionsQuery = query(collection(db, 'transactions'), orderBy('timestamp', 'desc'));
+        const transactionsSnapshot = await getDocs(transactionsQuery);
+        if (!transactionsSnapshot.empty) {
+          const firebaseTransactions = transactionsSnapshot.docs.map(doc => doc.data());
+          setActivityLog(firebaseTransactions);
+          localStorage.setItem('kegtracker_activity', JSON.stringify(firebaseTransactions));
+        }
+      } catch (error) {
+        console.error('Error loading from Firebase:', error);
+      }
+    };
+
+    loadFromFirebase();
+
+    // Real-time listeners
+    const unsubscribeKegs = onSnapshot(collection(db, 'kegs'), (snapshot) => {
+      const updatedKegs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setKegs(updatedKegs);
+      localStorage.setItem('kegtracker_kegs', JSON.stringify(updatedKegs));
+    });
+
+    const unsubscribeTransactions = onSnapshot(
+      query(collection(db, 'transactions'), orderBy('timestamp', 'desc')),
+      (snapshot) => {
+        const updatedTransactions = snapshot.docs.map(doc => doc.data());
+        setActivityLog(updatedTransactions);
+        localStorage.setItem('kegtracker_activity', JSON.stringify(updatedTransactions));
+      }
+    );
+
+    return () => {
+      unsubscribeKegs();
+      unsubscribeTransactions();
+    };
+  }, []);
 
   // Save customers to localStorage whenever they change
   useEffect(() => {
@@ -161,6 +228,7 @@ const App = () => {
       user: 'Current User' // Could be extended with actual user management
     };
     setActivityLog(prev => [newActivity, ...prev].slice(0, 100)); // Keep last 100 activities
+    saveTransactionToFirebase(action, details, kegId); // Save to Firebase
   };
 
   // Enhanced statistics
@@ -304,10 +372,22 @@ const App = () => {
             setBc(barcodeText);
             setErr('');
             
-            // Auto-submit after short delay
+            // Handle different scan modes
             setTimeout(() => {
-              stopCam();
-              submitBarcode(barcodeText);
+              if (batchMode) {
+                // Batch mode: don't close camera
+                submitBarcode(barcodeText);
+                setBc(''); // Clear for next scan
+              } else if (modal === 'addKeg' || modal === 'editKeg') {
+                // Inventory scan: populate barcode field and close camera
+                setScannedBarcodeForInventory(barcodeText);
+                stopCam();
+                setScan(false);
+              } else {
+                // Normal mode: close camera and show manage modal
+                stopCam();
+                submitBarcode(barcodeText);
+              }
             }, 500);
           }
           
@@ -330,9 +410,20 @@ const App = () => {
     console.log('📝 Submitting barcode:', code);
     const k = kegs.find(x => x.barcode === code);
     if (k) {
-      setSel(k);
-      setModal('');
-      setErr('');
+      if (batchMode) {
+        // Batch mode: add to selection, don't close camera
+        if (!selectedKegs.includes(k.id)) {
+          setSelectedKegs([...selectedKegs, k.id]);
+        }
+        setErr('');
+      } else {
+        // Normal mode: open manage modal
+        setSel(k);
+        setModal('manageKeg'); // Changed from '' to 'manageKeg'
+        setErr('');
+        // Log to Firebase
+        saveTransactionToFirebase('Barcode Scanned', `Scanned keg ${k.id}`, k.id);
+      }
     } else {
       setErr(`No keg found with barcode: ${code}`);
     }
@@ -369,6 +460,32 @@ const App = () => {
         console.log('✅ Video track stopped');
       });
       vid.current.srcObject = null;
+    }
+  };
+
+  // Firebase helper functions
+  const saveKegToFirebase = async (keg) => {
+    try {
+      await setDoc(doc(db, 'kegs', keg.id), keg);
+      console.log('✅ Keg saved to Firebase:', keg.id);
+    } catch (error) {
+      console.error('❌ Error saving keg to Firebase:', error);
+    }
+  };
+
+  const saveTransactionToFirebase = async (action, details, kegId = null) => {
+    try {
+      const transaction = {
+        action,
+        details,
+        kegId,
+        timestamp: serverTimestamp(),
+        user: 'Current User'
+      };
+      await addDoc(collection(db, 'transactions'), transaction);
+      console.log('✅ Transaction saved to Firebase');
+    } catch (error) {
+      console.error('❌ Error saving transaction:', error);
     }
   };
 
