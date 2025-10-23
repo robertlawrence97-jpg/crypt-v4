@@ -1132,7 +1132,7 @@ function App() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Size</label>
                 <select
                   value={kegFormData.size}
-                  onChange={(e) => setKegFormData({ ...formData, size: e.target.value })}
+                  onChange={(e) => setKegFormData({ ...kegFormData, size: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="5.16 gal">5.16 gal (1/6 bbl)</option>
@@ -1147,7 +1147,7 @@ function App() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Product</label>
                 <select
                   value={kegFormData.product}
-                  onChange={(e) => setKegFormData({ ...formData, product: e.target.value })}
+                  onChange={(e) => setKegFormData({ ...kegFormData, product: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="">Select Product</option>
@@ -1160,7 +1160,7 @@ function App() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
                   value={kegFormData.status}
-                  onChange={(e) => setKegFormData({ ...formData, status: e.target.value })}
+                  onChange={(e) => setKegFormData({ ...kegFormData, status: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="Empty">Empty</option>
@@ -1179,7 +1179,7 @@ function App() {
                 <input
                   type="text"
                   value={kegFormData.location}
-                  onChange={(e) => setKegFormData({ ...formData, location: e.target.value })}
+                  onChange={(e) => setKegFormData({ ...kegFormData, location: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   placeholder="Brewery"
                 />
@@ -1188,7 +1188,7 @@ function App() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Customer</label>
                 <select
                   value={kegFormData.customer}
-                  onChange={(e) => setKegFormData({ ...formData, customer: e.target.value })}
+                  onChange={(e) => setKegFormData({ ...kegFormData, customer: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="">No Customer</option>
@@ -1265,7 +1265,7 @@ function App() {
               <input
                 type="text"
                 value={customerFormData.address}
-                onChange={(e) => setCustomerFormData({ ...formData, address: e.target.value })}
+                onChange={(e) => setCustomerFormData({ ...kegFormData, address: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 placeholder="123 Main St"
                 required
@@ -1278,7 +1278,7 @@ function App() {
                 <input
                   type="text"
                   value={customerFormData.city}
-                  onChange={(e) => setCustomerFormData({ ...formData, city: e.target.value })}
+                  onChange={(e) => setCustomerFormData({ ...kegFormData, city: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   placeholder="Portland"
                   required
@@ -1289,7 +1289,7 @@ function App() {
                 <input
                   type="text"
                   value={customerFormData.state}
-                  onChange={(e) => setCustomerFormData({ ...formData, state: e.target.value })}
+                  onChange={(e) => setCustomerFormData({ ...kegFormData, state: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   placeholder="OR"
                   maxLength="2"
@@ -1301,7 +1301,7 @@ function App() {
                 <input
                   type="text"
                   value={customerFormData.zip}
-                  onChange={(e) => setCustomerFormData({ ...formData, zip: e.target.value })}
+                  onChange={(e) => setCustomerFormData({ ...kegFormData, zip: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   placeholder="97201"
                   required
@@ -1315,7 +1315,7 @@ function App() {
                 <input
                   type="tel"
                   value={customerFormData.phone}
-                  onChange={(e) => setCustomerFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) => setCustomerFormData({ ...kegFormData, phone: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   placeholder="555-0101"
                   required
@@ -1326,7 +1326,7 @@ function App() {
                 <input
                   type="email"
                   value={customerFormData.email}
-                  onChange={(e) => setCustomerFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) => setCustomerFormData({ ...kegFormData, email: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   placeholder="orders@customer.com"
                 />
@@ -1339,7 +1339,7 @@ function App() {
                 <input
                   type="number"
                   value={customerFormData.creditLimit}
-                  onChange={(e) => setCustomerFormData({ ...formData, creditLimit: parseInt(e.target.value) })}
+                  onChange={(e) => setCustomerFormData({ ...kegFormData, creditLimit: parseInt(e.target.value) })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 />
               </div>
@@ -1347,7 +1347,7 @@ function App() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Day</label>
                 <select
                   value={customerFormData.deliveryDay}
-                  onChange={(e) => setCustomerFormData({ ...formData, deliveryDay: e.target.value })}
+                  onChange={(e) => setCustomerFormData({ ...kegFormData, deliveryDay: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 >
                   <option>Monday</option>
@@ -1361,7 +1361,7 @@ function App() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Route</label>
                 <select
                   value={customerFormData.route}
-                  onChange={(e) => setCustomerFormData({ ...formData, route: e.target.value })}
+                  onChange={(e) => setCustomerFormData({ ...kegFormData, route: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 >
                   <option>Route A</option>
@@ -1375,7 +1375,7 @@ function App() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
               <textarea
                 value={customerFormData.notes}
-                onChange={(e) => setCustomerFormData({ ...formData, notes: e.target.value })}
+                onChange={(e) => setCustomerFormData({ ...kegFormData, notes: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 rows="3"
                 placeholder="Special instructions or notes..."
@@ -1384,7 +1384,7 @@ function App() {
 
             <div className="flex gap-3 pt-4">
               <button
-                onClick={() => addOrUpdateCustomer(formData)}
+                onClick={() => addOrUpdateCustomer(customerFormData)}
                 className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-semibold"
               >
                 {editingItem ? 'Update Customer' : 'Add Customer'}
