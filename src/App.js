@@ -99,6 +99,31 @@ function App() {
   const [selectedItems, setSelectedItems] = useState([]);
   const [showKegHistory, setShowKegHistory] = useState(null);
   const [quickActionMenu, setQuickActionMenu] = useState(false);
+  
+  // Form data states for modals
+  const [kegFormData, setKegFormData] = useState({
+    barcode: '',
+    product: '',
+    size: '15.5 gal',
+    status: 'Empty',
+    location: 'Brewery',
+    fillDate: '',
+    owner: 'Brewery',
+    customer: ''
+  });
+  const [customerFormData, setCustomerFormData] = useState({
+    name: '',
+    address: '',
+    city: '',
+    state: '',
+    zip: '',
+    phone: '',
+    email: '',
+    creditLimit: 1000,
+    deliveryDay: 'Monday',
+    route: 'Route A',
+    notes: ''
+  });
 
   // Save to localStorage whenever state changes
   useEffect(() => {
@@ -427,6 +452,92 @@ function App() {
     setModal('');
   };
 
+  const openKegModal = (keg = null) => {
+    if (keg) {
+      setEditingItem(keg);
+      setKegFormData(keg);
+    } else {
+      setEditingItem(null);
+      setKegFormData({
+        barcode: '',
+        product: '',
+        size: '15.5 gal',
+        status: 'Empty',
+        location: 'Brewery',
+        fillDate: '',
+        owner: 'Brewery',
+        customer: ''
+      });
+    }
+    setModal('addKeg');
+  };
+
+  const openCustomerModal = (customer = null) => {
+    if (customer) {
+      setEditingItem(customer);
+      setCustomerFormData(customer);
+    } else {
+      setEditingItem(null);
+      setCustomerFormData({
+        name: '',
+        address: '',
+        city: '',
+        state: '',
+        zip: '',
+        phone: '',
+        email: '',
+        creditLimit: 1000,
+        deliveryDay: 'Monday',
+        route: 'Route A',
+        notes: ''
+      });
+    }
+    setModal('addCustomer');
+  };
+
+  const handleDelete = () => {
+    if (editingItem) {
+      setKegs(kegs.map(k => k.id === editingItem.id ? { ...k, ...updated } : k));
+      logActivity('Keg Updated', `Updated keg ${updated.id}`, updated.id);
+    } else {
+      const newKeg = {
+        id: `KEG${String(kegs.length + 1).padStart(3, '0')}`,
+        ...updated,
+        turnsThisYear: 0,
+        deposit: 30,
+        lastCleaned: new Date().toISOString().split('T')[0],
+        condition: 'Good',
+        maintenanceNotes: '',
+        rentalRate: 0,
+        purchaseDate: new Date().toISOString().split('T')[0]
+      };
+      setKegs([...kegs, newKeg]);
+      logActivity('Keg Added', `Added new keg ${newKeg.id}`, newKeg.id);
+    }
+    setEditingItem(null);
+    setModal('');
+  };
+
+  const addOrUpdateCustomer = (updated) => {
+    if (editingItem) {
+      setCustomers(customers.map(c => c.id === editingItem.id ? { ...c, ...updated } : c));
+      logActivity('Customer Updated', `Updated customer ${updated.name}`);
+    } else {
+      const newCustomer = {
+        id: `C${customers.length + 1}`,
+        ...updated,
+        kegsOut: 0,
+        depositBalance: 0,
+        currentBalance: 0,
+        status: 'Active'
+      };
+      setCustomers([...customers, newCustomer]);
+      logActivity('Customer Added', `Added new customer ${updated.name}`);
+    }
+    setEditingItem(null);
+    setModal('');
+  };
+
   const handleDelete = () => {
     if (!deleteConfirm) return;
     
@@ -572,14 +683,14 @@ function App() {
       {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <button
-          onClick={() => { setEditingItem(null); setModal('addKeg'); }}
+          onClick={() => openKegModal()}
           className="bg-white p-6 rounded-lg shadow border border-gray-200 hover:shadow-lg transition-shadow flex flex-col items-center gap-2"
         >
           <Plus className="w-8 h-8 text-blue-500" />
           <span className="font-semibold">Add Keg</span>
         </button>
         <button
-          onClick={() => { setEditingItem(null); setModal('addCustomer'); }}
+          onClick={() => openCustomerModal()}
           className="bg-white p-6 rounded-lg shadow border border-gray-200 hover:shadow-lg transition-shadow flex flex-col items-center gap-2"
         >
           <Users className="w-8 h-8 text-green-500" />
@@ -609,7 +720,7 @@ function App() {
         <h1 className="text-3xl font-bold text-gray-900">Keg Inventory</h1>
         <div className="flex gap-2">
           <button
-            onClick={() => { setEditingItem(null); setModal('addKeg'); }}
+            onClick={() => openKegModal()}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
           >
             <Plus className="w-5 h-5" />
@@ -731,7 +842,7 @@ function App() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex gap-2">
                       <button
-                        onClick={() => { setEditingItem(k); setModal('addKeg'); }}
+                        onClick={() => openKegModal(k)}
                         className="text-blue-600 hover:text-blue-900"
                       >
                         <Edit className="w-4 h-4" />
@@ -765,7 +876,7 @@ function App() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900">Customers</h1>
         <button
-          onClick={() => { setEditingItem(null); setModal('addCustomer'); }}
+          onClick={() => openCustomerModal()}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
         >
           <Plus className="w-5 h-5" />
@@ -818,7 +929,7 @@ function App() {
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => { setEditingItem(c); setModal('addCustomer'); }}
+                  onClick={() => openCustomerModal(c)}
                   className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
                 >
                   <Edit className="w-5 h-5" />
@@ -1033,17 +1144,6 @@ function App() {
   );
 
   const renderAddKegModal = () => {
-    const [formData, setFormData] = useState(editingItem || {
-      barcode: '',
-      product: '',
-      size: '15.5 gal',
-      status: 'Empty',
-      location: 'Brewery',
-      fillDate: '',
-      owner: 'Brewery',
-      customer: ''
-    });
-
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
@@ -1065,8 +1165,8 @@ function App() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Barcode</label>
                 <input
                   type="text"
-                  value={formData.barcode}
-                  onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
+                  value={kegFormData.barcode}
+                  onChange={(e) => setKegFormData({ ...kegFormData, barcode: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   placeholder="3001234567890"
                 />
@@ -1074,8 +1174,8 @@ function App() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Size</label>
                 <select
-                  value={formData.size}
-                  onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+                  value={kegFormData.size}
+                  onChange={(e) => setKegFormData({ ...formData, size: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="5.16 gal">5.16 gal (1/6 bbl)</option>
@@ -1089,8 +1189,8 @@ function App() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Product</label>
                 <select
-                  value={formData.product}
-                  onChange={(e) => setFormData({ ...formData, product: e.target.value })}
+                  value={kegFormData.product}
+                  onChange={(e) => setKegFormData({ ...formData, product: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="">Select Product</option>
@@ -1102,8 +1202,8 @@ function App() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
-                  value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  value={kegFormData.status}
+                  onChange={(e) => setKegFormData({ ...formData, status: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="Empty">Empty</option>
@@ -1121,8 +1221,8 @@ function App() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
                 <input
                   type="text"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  value={kegFormData.location}
+                  onChange={(e) => setKegFormData({ ...formData, location: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   placeholder="Brewery"
                 />
@@ -1130,8 +1230,8 @@ function App() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Customer</label>
                 <select
-                  value={formData.customer}
-                  onChange={(e) => setFormData({ ...formData, customer: e.target.value })}
+                  value={kegFormData.customer}
+                  onChange={(e) => setKegFormData({ ...formData, customer: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="">No Customer</option>
@@ -1142,13 +1242,13 @@ function App() {
               </div>
             </div>
 
-            {formData.product && (
+            {kegFormData.product && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Fill Date</label>
                 <input
                   type="date"
-                  value={formData.fillDate}
-                  onChange={(e) => setFormData({ ...formData, fillDate: e.target.value })}
+                  value={kegFormData.fillDate}
+                  onChange={(e) => setKegFormData({ ...kegFormData, fillDate: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 />
               </div>
@@ -1156,7 +1256,7 @@ function App() {
 
             <div className="flex gap-3 pt-4">
               <button
-                onClick={() => addOrUpdateKeg(formData)}
+                onClick={() => addOrUpdateKeg(kegFormData)}
                 className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-semibold"
               >
                 {editingItem ? 'Update Keg' : 'Add Keg'}
@@ -1175,20 +1275,6 @@ function App() {
   };
 
   const renderAddCustomerModal = () => {
-    const [formData, setFormData] = useState(editingItem || {
-      name: '',
-      address: '',
-      city: '',
-      state: '',
-      zip: '',
-      phone: '',
-      email: '',
-      creditLimit: 1000,
-      deliveryDay: 'Monday',
-      route: 'Route A',
-      notes: ''
-    });
-
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
@@ -1209,8 +1295,8 @@ function App() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Business Name *</label>
               <input
                 type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                value={customerFormData.name}
+                onChange={(e) => setCustomerFormData({ ...customerFormData, name: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 placeholder="Downtown Tap House"
                 required
@@ -1221,8 +1307,8 @@ function App() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
               <input
                 type="text"
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                value={customerFormData.address}
+                onChange={(e) => setCustomerFormData({ ...formData, address: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 placeholder="123 Main St"
                 required
@@ -1234,8 +1320,8 @@ function App() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
                 <input
                   type="text"
-                  value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                  value={customerFormData.city}
+                  onChange={(e) => setCustomerFormData({ ...formData, city: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   placeholder="Portland"
                   required
@@ -1245,8 +1331,8 @@ function App() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">State *</label>
                 <input
                   type="text"
-                  value={formData.state}
-                  onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                  value={customerFormData.state}
+                  onChange={(e) => setCustomerFormData({ ...formData, state: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   placeholder="OR"
                   maxLength="2"
@@ -1257,8 +1343,8 @@ function App() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">ZIP *</label>
                 <input
                   type="text"
-                  value={formData.zip}
-                  onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
+                  value={customerFormData.zip}
+                  onChange={(e) => setCustomerFormData({ ...formData, zip: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   placeholder="97201"
                   required
@@ -1271,8 +1357,8 @@ function App() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
                 <input
                   type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  value={customerFormData.phone}
+                  onChange={(e) => setCustomerFormData({ ...formData, phone: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   placeholder="555-0101"
                   required
@@ -1282,8 +1368,8 @@ function App() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <input
                   type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  value={customerFormData.email}
+                  onChange={(e) => setCustomerFormData({ ...formData, email: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   placeholder="orders@customer.com"
                 />
@@ -1295,16 +1381,16 @@ function App() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Credit Limit</label>
                 <input
                   type="number"
-                  value={formData.creditLimit}
-                  onChange={(e) => setFormData({ ...formData, creditLimit: parseInt(e.target.value) })}
+                  value={customerFormData.creditLimit}
+                  onChange={(e) => setCustomerFormData({ ...formData, creditLimit: parseInt(e.target.value) })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Day</label>
                 <select
-                  value={formData.deliveryDay}
-                  onChange={(e) => setFormData({ ...formData, deliveryDay: e.target.value })}
+                  value={customerFormData.deliveryDay}
+                  onChange={(e) => setCustomerFormData({ ...formData, deliveryDay: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 >
                   <option>Monday</option>
@@ -1317,8 +1403,8 @@ function App() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Route</label>
                 <select
-                  value={formData.route}
-                  onChange={(e) => setFormData({ ...formData, route: e.target.value })}
+                  value={customerFormData.route}
+                  onChange={(e) => setCustomerFormData({ ...formData, route: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 >
                   <option>Route A</option>
@@ -1331,8 +1417,8 @@ function App() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
               <textarea
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                value={customerFormData.notes}
+                onChange={(e) => setCustomerFormData({ ...formData, notes: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 rows="3"
                 placeholder="Special instructions or notes..."
@@ -1531,7 +1617,7 @@ function App() {
             {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
               <button
-                onClick={() => { setEditingItem(sel); setModal('addKeg'); setSel(null); }}
+                onClick={() => { openKegModal(sel); setSel(null); }}
                 className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-semibold flex items-center justify-center gap-2"
               >
                 <Edit className="w-5 h-5" />
