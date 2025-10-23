@@ -44,8 +44,6 @@ const CryptKeeperLogo = ({ className = "h-12 w-auto" }) => (
 );
 
 const App = () => {
-  const [auth, setAuth] = useState(false);
-  const [pwd, setPwd] = useState('');
   const [view, setView] = useState('dashboard');
   const [kegs, setKegs] = useState(() => {
     const saved = localStorage.getItem('kegtracker_kegs');
@@ -121,6 +119,21 @@ const App = () => {
   useEffect(() => {
     localStorage.setItem('kegtracker_activity', JSON.stringify(activityLog));
   }, [activityLog]);
+
+  // Auto-start camera when barcode scan modal opens
+  useEffect(() => {
+    if (modal === 'scanBarcode' || scan) {
+      console.log('🎥 Scan modal opened, starting camera...');
+      startCameraStream();
+    }
+    
+    // Cleanup: stop camera when modal closes
+    return () => {
+      if (modal !== 'scanBarcode' && !scan) {
+        stopCam();
+      }
+    };
+  }, [modal, scan]);
 
   // Lock body scroll when keg history modal is open
   useEffect(() => {
@@ -480,32 +493,8 @@ const App = () => {
     logActivity('Export Data', `Exported ${type} report`);
   };
 
-  if (!auth) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
-          <div className="text-center mb-8">
-            <div className="mb-4 flex justify-center">
-              <CryptKeeperLogo className="h-24 w-auto" />
-            </div>
-            <p className="text-gray-600">Keg Management System</p>
-          </div>
-          <input
-            type="password"
-            value={pwd}
-            onChange={e => setPwd(e.target.value)}
-            onKeyPress={e => e.key === 'Enter' && (pwd === 'cellarrats' ? setAuth(true) : setErr('Wrong password'))}
-            placeholder="Enter password"
-            className="w-full px-4 py-3 border-2 rounded-lg mb-4 focus:border-black focus:outline-none"
-          />
-          {err && <p className="text-red-600 text-sm mb-4">{err}</p>}
-          <button onClick={() => pwd === 'cellarrats' ? setAuth(true) : setErr('Wrong password')} className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 font-semibold">
-            Login
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // Firebase authentication is now handled by AuthContext in index.js
+  // No need for the old password screen anymore
 
   const filteredKegs = kegs.filter(k => {
     const matchesSearch = k.id.toLowerCase().includes(search.toLowerCase()) || 
