@@ -496,29 +496,6 @@ function App() {
   };
 
   const handleDelete = () => {
-    if (editingItem) {
-      setKegs(kegs.map(k => k.id === editingItem.id ? { ...k, ...updated } : k));
-      logActivity('Keg Updated', `Updated keg ${updated.id}`, updated.id);
-    } else {
-      const newKeg = {
-        id: `KEG${String(kegs.length + 1).padStart(3, '0')}`,
-        ...updated,
-        turnsThisYear: 0,
-        deposit: 30,
-        lastCleaned: new Date().toISOString().split('T')[0],
-        condition: 'Good',
-        maintenanceNotes: '',
-        rentalRate: 0,
-        purchaseDate: new Date().toISOString().split('T')[0]
-      };
-      setKegs([...kegs, newKeg]);
-      logActivity('Keg Added', `Added new keg ${newKeg.id}`, newKeg.id);
-    }
-    setEditingItem(null);
-    setModal('');
-  };
-
-  const handleDelete = () => {
     if (!deleteConfirm) return;
     
     if (deleteConfirm.type === 'customer') {
