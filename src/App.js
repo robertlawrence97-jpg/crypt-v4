@@ -518,26 +518,6 @@ function App() {
     setModal('');
   };
 
-  const addOrUpdateCustomer = (updated) => {
-    if (editingItem) {
-      setCustomers(customers.map(c => c.id === editingItem.id ? { ...c, ...updated } : c));
-      logActivity('Customer Updated', `Updated customer ${updated.name}`);
-    } else {
-      const newCustomer = {
-        id: `C${customers.length + 1}`,
-        ...updated,
-        kegsOut: 0,
-        depositBalance: 0,
-        currentBalance: 0,
-        status: 'Active'
-      };
-      setCustomers([...customers, newCustomer]);
-      logActivity('Customer Added', `Added new customer ${updated.name}`);
-    }
-    setEditingItem(null);
-    setModal('');
-  };
-
   const handleDelete = () => {
     if (!deleteConfirm) return;
     
