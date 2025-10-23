@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Camera, Package, Truck, Users, BarChart3, Search, Plus, MapPin, AlertCircle, Check, X, Edit, Trash2, Save, QrCode, Home, FileText, Clock, DollarSign, TrendingUp, Filter, Download, Calendar, Wrench, Bell, TrendingDown, Archive, RefreshCw, Shield, Activity, Target, Layers, Cloud, Upload } from 'lucide-react';
+import { BrowserMultiFormatReader } from '@zxing/library';
 
 // Enhanced initial data with more realistic brewery operations
 const initialKegs = [
@@ -72,6 +73,7 @@ const App = () => {
   const [editingItem, setEditingItem] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null); // { type: 'customer'|'product', item: object, index: number }
   const vid = useRef(null);
+  const codeReader = useRef(null);
   
   // New state for enhanced features
   const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
@@ -195,10 +197,8 @@ const App = () => {
       }
       
       // Start mock scanning after a short delay to ensure video is playing
-      setTimeout(() => {
-        console.log('🔄 Starting mock barcode detection');
-        startMockScanning(stream);
-      }, 1000);
+      // Start real barcode scanning
+      setTimeout(() => startBarcodeScanning(), 1000);
       
     } catch (e) {
       console.error('❌ Camera permission error:', e);
@@ -231,8 +231,8 @@ const App = () => {
         });
       }
       
-      // Start mock scanning
-      setTimeout(() => startMockScanning(stream), 1000);
+      // Start real barcode scanning
+      setTimeout(() => startBarcodeScanning(), 1000);
       
     } catch (e) {
       console.error('❌ Camera error:', e);
@@ -248,12 +248,72 @@ const App = () => {
     }
   };
 
-  const startMockScanning = (stream) => {
-    // Mock scanning - in production, use a real barcode scanner library
-    console.log('🔍 Mock scanning active');
+  const startBarcodeScanning = async () => {
+    console.log('🔍 Starting real barcode scanning with ZXing');
+    try {
+      // Initialize the barcode reader
+      if (!codeReader.current) {
+        codeReader.current = new BrowserMultiFormatReader();
+      }
+
+      // Start continuous scanning from video element
+      codeReader.current.decodeFromVideoElement(vid.current, (result, err) => {
+        if (result) {
+          const barcodeText = result.getText();
+          console.log('✅ Barcode detected:', barcodeText);
+          
+          // Play success beep
+          try {
+            const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjiR1/LMeSwFJHfH8N2QQAo=');
+            audio.play();
+          } catch (e) {
+            console.log('Beep failed:', e);
+          }
+          
+          // Set the barcode value
+          setBc(barcodeText);
+          setErr('');
+          
+          // Auto-submit after short delay
+          setTimeout(() => {
+            stopCam();
+            submitBarcode(barcodeText);
+          }, 500);
+        }
+        
+        if (err && !(err.name === 'NotFoundException')) {
+          console.error('Scan error:', err);
+        }
+      });
+    } catch (e) {
+      console.error('❌ Barcode scanning error:', e);
+      setErr('Barcode scanning failed: ' + e.message);
+    }
+  };
+
+  const submitBarcode = (code) => {
+    console.log('📝 Submitting barcode:', code);
+    const k = kegs.find(x => x.barcode === code);
+    if (k) {
+      setSel(k);
+      setModal('');
+      setErr('');
+    } else {
+      setErr(`No keg found with barcode: ${code}`);
+    }
   };
 
   const stopCam = () => {
+    // Stop the barcode reader
+    if (codeReader.current) {
+      try {
+        codeReader.current.reset();
+      } catch (e) {
+        console.log('Code reader reset error:', e);
+      }
+    }
+    
+    // Stop the video stream
     if (vid.current?.srcObject) {
       vid.current.srcObject.getTracks().forEach(t => t.stop());
       vid.current.srcObject = null;
