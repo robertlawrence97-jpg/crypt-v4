@@ -1151,11 +1151,11 @@ const App = () => {
               { id: 'inventory', icon: Package, label: 'Inventory' },
               { id: 'customers', icon: Users, label: 'Customers' },
               { id: 'maintenance', icon: Wrench, label: 'Maintenance' },
-              { id: 'financial', icon: DollarSign, label: 'Financial' },
+              // { id: 'financial', icon: DollarSign, label: 'Financial' }, // Hidden
               { id: 'reports', icon: BarChart3, label: 'Reports' },
               { id: 'settings', icon: Shield, label: 'Settings' },
-              { id: 'archive', icon: Archive, label: 'Archive' },
-            ].map(tab => (
+              // { id: 'archive', icon: Archive, label: 'Archive' }, // Hidden
+            ].filter(tab => tab).map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setView(tab.id)}
@@ -1911,19 +1911,20 @@ const App = () => {
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <div className="bg-blue-50 p-4 rounded-lg text-center">
                       <p className="text-3xl font-bold text-blue-600">{c.kegsOut}</p>
                       <p className="text-sm text-gray-600">Kegs Out</p>
                     </div>
-                    <div className="bg-green-50 p-4 rounded-lg text-center">
+                    {/* Hidden: Deposits and Balance Due */}
+                    {/* <div className="bg-green-50 p-4 rounded-lg text-center">
                       <p className="text-3xl font-bold text-green-600">${c.depositBalance}</p>
                       <p className="text-sm text-gray-600">Deposits</p>
                     </div>
                     <div className="bg-purple-50 p-4 rounded-lg text-center">
                       <p className="text-3xl font-bold text-purple-600">${c.currentBalance}</p>
                       <p className="text-sm text-gray-600">Balance Due</p>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 
