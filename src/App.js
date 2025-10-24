@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Camera, Package, Truck, Users, BarChart3, Search, Plus, MapPin, AlertCircle, Check, X, Edit, Trash2, Save, QrCode, Home, FileText, Clock, DollarSign, TrendingUp, Filter, Download, Calendar, Wrench, Bell, TrendingDown, Archive, RefreshCw, Shield, Activity, Target, Layers, Cloud, Upload } from 'lucide-react';
 import { BrowserMultiFormatReader } from '@zxing/library';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, addDoc, serverTimestamp, query, orderBy, deleteDoc } from 'firebase/firestore';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -51,6 +51,12 @@ const products = [
   { name: 'Porter', abv: 6.0, ibu: 35, style: 'Porter', active: true },
 ];
 
+const initialUsers = [
+  { id: 'U1', name: 'Admin User', email: 'admin@cryptkeeper.com', role: 'Admin', status: 'Active', createdDate: '2024-01-01', lastLogin: '2025-10-23' },
+  { id: 'U2', name: 'John Smith', email: 'john@cryptkeeper.com', role: 'Manager', status: 'Active', createdDate: '2024-02-15', lastLogin: '2025-10-22' },
+  { id: 'U3', name: 'Sarah Johnson', email: 'sarah@cryptkeeper.com', role: 'Staff', status: 'Active', createdDate: '2024-03-20', lastLogin: '2025-10-20' },
+];
+
 // CryptKeeper Logo Component with actual logo image
 const CryptKeeperLogo = ({ className = "h-12 w-auto" }) => (
   <img 
@@ -62,18 +68,11 @@ const CryptKeeperLogo = ({ className = "h-12 w-auto" }) => (
 
 const App = () => {
   const [view, setView] = useState('dashboard');
-  const [kegs, setKegs] = useState(() => {
-    const saved = localStorage.getItem('kegtracker_kegs');
-    return saved ? JSON.parse(saved) : initialKegs;
-  });
-  const [customers, setCustomers] = useState(() => {
-    const saved = localStorage.getItem('kegtracker_customers');
-    return saved ? JSON.parse(saved) : initialCustomers;
-  });
-  const [productList, setProductList] = useState(() => {
-    const saved = localStorage.getItem('kegtracker_products');
-    return saved ? JSON.parse(saved) : products;
-  });
+  const [kegs, setKegs] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [productList, setProductList] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [currentUser] = useState({ id: 'U1', name: 'Admin User', role: 'Admin' }); // Simulating logged-in admin
   const [scan, setScan] = useState(false);
   const [bc, setBc] = useState('');
   const [err, setErr] = useState('');
@@ -118,16 +117,59 @@ const App = () => {
   const [showKegHistory, setShowKegHistory] = useState(null); // keg id to show history for
   const [quickActionMenu, setQuickActionMenu] = useState(false);
 
-  // Firebase sync - Load data on mount and listen for changes
+  // Firebase sync - Load ALL data on mount and listen for real-time changes
   useEffect(() => {
     const loadFromFirebase = async () => {
       try {
+        console.log('🔥 Loading all data from Firebase...');
+        
         // Load kegs
         const kegsSnapshot = await getDocs(collection(db, 'kegs'));
         if (!kegsSnapshot.empty) {
-          const firebaseKegs = kegsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          const firebaseKegs = kegsSnapshot.docs.map(doc => doc.data());
           setKegs(firebaseKegs);
-          localStorage.setItem('kegtracker_kegs', JSON.stringify(firebaseKegs));
+          console.log('✅ Loaded', firebaseKegs.length, 'kegs from Firebase');
+        } else {
+          // Initialize with default data if empty
+          console.log('⚠️ No kegs in Firebase, initializing with defaults...');
+          initialKegs.forEach(keg => saveKegToFirebase(keg));
+          setKegs(initialKegs);
+        }
+
+        // Load customers
+        const customersSnapshot = await getDocs(collection(db, 'customers'));
+        if (!customersSnapshot.empty) {
+          const firebaseCustomers = customersSnapshot.docs.map(doc => doc.data());
+          setCustomers(firebaseCustomers);
+          console.log('✅ Loaded', firebaseCustomers.length, 'customers from Firebase');
+        } else {
+          console.log('⚠️ No customers in Firebase, initializing with defaults...');
+          initialCustomers.forEach(customer => saveCustomerToFirebase(customer));
+          setCustomers(initialCustomers);
+        }
+
+        // Load products
+        const productsSnapshot = await getDocs(collection(db, 'products'));
+        if (!productsSnapshot.empty) {
+          const firebaseProducts = productsSnapshot.docs.map(doc => doc.data());
+          setProductList(firebaseProducts);
+          console.log('✅ Loaded', firebaseProducts.length, 'products from Firebase');
+        } else {
+          console.log('⚠️ No products in Firebase, initializing with defaults...');
+          products.forEach(product => saveProductToFirebase(product));
+          setProductList(products);
+        }
+
+        // Load users
+        const usersSnapshot = await getDocs(collection(db, 'users'));
+        if (!usersSnapshot.empty) {
+          const firebaseUsers = usersSnapshot.docs.map(doc => doc.data());
+          setUsers(firebaseUsers);
+          console.log('✅ Loaded', firebaseUsers.length, 'users from Firebase');
+        } else {
+          console.log('⚠️ No users in Firebase, initializing with defaults...');
+          initialUsers.forEach(user => saveUserToFirebase(user));
+          setUsers(initialUsers);
         }
 
         // Load transactions
@@ -136,20 +178,40 @@ const App = () => {
         if (!transactionsSnapshot.empty) {
           const firebaseTransactions = transactionsSnapshot.docs.map(doc => doc.data());
           setActivityLog(firebaseTransactions);
-          localStorage.setItem('kegtracker_activity', JSON.stringify(firebaseTransactions));
+          console.log('✅ Loaded', firebaseTransactions.length, 'transactions from Firebase');
         }
       } catch (error) {
-        console.error('Error loading from Firebase:', error);
+        console.error('❌ Error loading from Firebase:', error);
       }
     };
 
     loadFromFirebase();
 
-    // Real-time listeners
+    // Real-time listeners for all collections
+    console.log('👂 Setting up real-time listeners...');
+    
     const unsubscribeKegs = onSnapshot(collection(db, 'kegs'), (snapshot) => {
-      const updatedKegs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const updatedKegs = snapshot.docs.map(doc => doc.data());
       setKegs(updatedKegs);
-      localStorage.setItem('kegtracker_kegs', JSON.stringify(updatedKegs));
+      console.log('🔄 Kegs updated from Firebase:', updatedKegs.length);
+    });
+
+    const unsubscribeCustomers = onSnapshot(collection(db, 'customers'), (snapshot) => {
+      const updatedCustomers = snapshot.docs.map(doc => doc.data());
+      setCustomers(updatedCustomers);
+      console.log('🔄 Customers updated from Firebase:', updatedCustomers.length);
+    });
+
+    const unsubscribeProducts = onSnapshot(collection(db, 'products'), (snapshot) => {
+      const updatedProducts = snapshot.docs.map(doc => doc.data());
+      setProductList(updatedProducts);
+      console.log('🔄 Products updated from Firebase:', updatedProducts.length);
+    });
+
+    const unsubscribeUsers = onSnapshot(collection(db, 'users'), (snapshot) => {
+      const updatedUsers = snapshot.docs.map(doc => doc.data());
+      setUsers(updatedUsers);
+      console.log('🔄 Users updated from Firebase:', updatedUsers.length);
     });
 
     const unsubscribeTransactions = onSnapshot(
@@ -157,36 +219,19 @@ const App = () => {
       (snapshot) => {
         const updatedTransactions = snapshot.docs.map(doc => doc.data());
         setActivityLog(updatedTransactions);
-        localStorage.setItem('kegtracker_activity', JSON.stringify(updatedTransactions));
+        console.log('🔄 Transactions updated from Firebase:', updatedTransactions.length);
       }
     );
 
     return () => {
+      console.log('🔌 Cleaning up Firebase listeners...');
       unsubscribeKegs();
+      unsubscribeCustomers();
+      unsubscribeProducts();
+      unsubscribeUsers();
       unsubscribeTransactions();
     };
   }, []);
-
-  // Save customers to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('kegtracker_customers', JSON.stringify(customers));
-  }, [customers]);
-
-  // Save products to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('kegtracker_products', JSON.stringify(productList));
-  }, [productList]);
-
-  // Save kegs to localStorage whenever they change
-  useEffect(() => {
-    console.log('💾 Saving kegs to localStorage:', kegs.length, 'kegs');
-    localStorage.setItem('kegtracker_kegs', JSON.stringify(kegs));
-  }, [kegs]);
-
-  // Save activity log to localStorage
-  useEffect(() => {
-    localStorage.setItem('kegtracker_activity', JSON.stringify(activityLog));
-  }, [activityLog]);
 
   // Auto-start camera when barcode scan modal opens
   useEffect(() => {
@@ -473,6 +518,54 @@ const App = () => {
     }
   };
 
+  const saveCustomerToFirebase = async (customer) => {
+    try {
+      await setDoc(doc(db, 'customers', customer.id), customer);
+      console.log('✅ Customer saved to Firebase:', customer.id);
+    } catch (error) {
+      console.error('❌ Error saving customer to Firebase:', error);
+    }
+  };
+
+  const saveProductToFirebase = async (product) => {
+    try {
+      // Products don't have IDs, so we'll use the name as the ID
+      const productId = product.name.replace(/\s+/g, '_').toLowerCase();
+      await setDoc(doc(db, 'products', productId), product);
+      console.log('✅ Product saved to Firebase:', product.name);
+    } catch (error) {
+      console.error('❌ Error saving product to Firebase:', error);
+    }
+  };
+
+  const deleteProductFromFirebase = async (product) => {
+    try {
+      const productId = product.name.replace(/\s+/g, '_').toLowerCase();
+      await deleteDoc(doc(db, 'products', productId));
+      console.log('✅ Product deleted from Firebase:', product.name);
+    } catch (error) {
+      console.error('❌ Error deleting product from Firebase:', error);
+    }
+  };
+
+  const saveUserToFirebase = async (user) => {
+    try {
+      await setDoc(doc(db, 'users', user.id), user);
+      console.log('✅ User saved to Firebase:', user.id);
+    } catch (error) {
+      console.error('❌ Error saving user to Firebase:', error);
+    }
+  };
+
+  const deleteUserFromFirebase = async (userId) => {
+    try {
+      await deleteDoc(doc(db, 'users', userId));
+      console.log('✅ User deleted from Firebase:', userId);
+    } catch (error) {
+      console.error('❌ Error deleting user from Firebase:', error);
+    }
+  };
+
   const saveTransactionToFirebase = async (action, details, kegId = null) => {
     try {
       const transaction = {
@@ -480,7 +573,7 @@ const App = () => {
         details,
         kegId,
         timestamp: serverTimestamp(),
-        user: 'Current User'
+        user: currentUser.name
       };
       await addDoc(collection(db, 'transactions'), transaction);
       console.log('✅ Transaction saved to Firebase');
@@ -1721,6 +1814,73 @@ const App = () => {
         {view === 'settings' && (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold">Settings & Configuration</h2>
+            
+            {/* User Management - Admin Only */}
+            {currentUser.role === 'Admin' && (
+              <div className="bg-white p-6 rounded-xl shadow-lg">
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold">User Management</h3>
+                    <p className="text-sm text-gray-600">Manage system users and permissions</p>
+                  </div>
+                  <button 
+                    onClick={() => { setEditingItem(null); setModal('addUser'); }}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+                  >
+                    <Plus size={20} />
+                    Add User
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {users.map((u, idx) => (
+                    <div key={idx} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                      <div className="flex-1">
+                        <p className="font-semibold">{u.name}</p>
+                        <p className="text-sm text-gray-600">{u.email}</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Last login: {u.lastLogin} · Created: {u.createdDate}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          u.role === 'Admin' ? 'bg-purple-100 text-purple-700' :
+                          u.role === 'Manager' ? 'bg-blue-100 text-blue-700' :
+                          'bg-gray-100 text-gray-700'
+                        }`}>
+                          {u.role}
+                        </span>
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          u.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                        }`}>
+                          {u.status}
+                        </span>
+                        <div className="flex gap-2">
+                          <button 
+                            onClick={() => {
+                              setEditingItem({ type: 'user', data: u, index: idx });
+                              setModal('editUser');
+                            }}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded"
+                          >
+                            <Edit size={18} />
+                          </button>
+                          {u.id !== currentUser.id && ( // Can't delete yourself
+                            <button 
+                              onClick={() => {
+                                setDeleteConfirm({ type: 'user', item: u, index: idx });
+                              }}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             
             {/* Products Management */}
             <div className="bg-white p-6 rounded-xl shadow-lg">
@@ -3072,10 +3232,18 @@ const App = () => {
                     
                     if (modal === 'addProduct') {
                       setProductList([...productList, newProduct]);
+                      saveProductToFirebase(newProduct);
+                      logActivity('Add Product', `Added product: ${name}`, null);
                     } else {
+                      // If editing, delete old product first (in case name changed)
+                      if (editingItem.data.name !== name) {
+                        deleteProductFromFirebase(editingItem.data);
+                      }
                       const updated = [...productList];
                       updated[editingItem.index] = newProduct;
                       setProductList(updated);
+                      saveProductToFirebase(newProduct);
+                      logActivity('Edit Product', `Updated product: ${name}`, null);
                     }
                     
                     setModal('');
@@ -3084,6 +3252,175 @@ const App = () => {
                   className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
                 >
                   {modal === 'addProduct' ? 'Add Product' : 'Save Changes'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add/Edit User Modal - Admin Only */}
+      {(modal === 'addUser' || modal === 'editUser') && currentUser.role === 'Admin' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full my-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold">{modal === 'addUser' ? 'Add New User' : 'Edit User'}</h3>
+              <button 
+                onClick={() => {
+                  setModal('');
+                  setEditingItem(null);
+                }}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="space-y-4" key={editingItem?.data?.id || 'new'}>
+              <div>
+                <label className="block text-sm font-semibold mb-2">Full Name *</label>
+                <input 
+                  id="userName"
+                  type="text" 
+                  defaultValue={editingItem?.data?.name || ''}
+                  placeholder="e.g., John Smith" 
+                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold mb-2">Email Address *</label>
+                <input 
+                  id="userEmail"
+                  type="email" 
+                  defaultValue={editingItem?.data?.email || ''}
+                  placeholder="user@cryptkeeper.com" 
+                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold mb-2">Role *</label>
+                <select
+                  id="userRole"
+                  defaultValue={editingItem?.data?.role || 'Staff'}
+                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                >
+                  <option value="Admin">Admin - Full system access</option>
+                  <option value="Manager">Manager - Can manage kegs and customers</option>
+                  <option value="Staff">Staff - Basic operations only</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold mb-2">Status *</label>
+                <select
+                  id="userStatus"
+                  defaultValue={editingItem?.data?.status || 'Active'}
+                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+              
+              {modal === 'addUser' && (
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Initial Password *</label>
+                  <input 
+                    id="userPassword"
+                    type="password" 
+                    placeholder="Enter initial password" 
+                    className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">User will be prompted to change on first login</p>
+                </div>
+              )}
+              
+              <div className="flex gap-3 sticky bottom-0 bg-white pt-4 mt-4 border-t z-10">
+                <button 
+                  onClick={() => {
+                    setModal('');
+                    setEditingItem(null);
+                  }}
+                  className="flex-1 px-4 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-semibold"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={() => {
+                    const name = document.getElementById('userName').value.trim();
+                    const email = document.getElementById('userEmail').value.trim();
+                    const role = document.getElementById('userRole').value;
+                    const status = document.getElementById('userStatus').value;
+                    
+                    if (!name || !email) {
+                      alert('Please fill in all required fields');
+                      return;
+                    }
+                    
+                    // Validate email format
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(email)) {
+                      alert('Please enter a valid email address');
+                      return;
+                    }
+                    
+                    // Check for duplicate email
+                    if (modal === 'addUser' && users.find(u => u.email === email)) {
+                      alert('A user with this email already exists');
+                      return;
+                    }
+                    
+                    if (modal === 'editUser' && users.find((u, idx) => u.email === email && idx !== editingItem.index)) {
+                      alert('Another user with this email already exists');
+                      return;
+                    }
+                    
+                    if (modal === 'addUser') {
+                      const password = document.getElementById('userPassword').value;
+                      if (!password) {
+                        alert('Please enter an initial password');
+                        return;
+                      }
+                      
+                      const newUser = {
+                        id: 'U' + (users.length + 1),
+                        name,
+                        email,
+                        role,
+                        status,
+                        createdDate: new Date().toISOString().split('T')[0],
+                        lastLogin: 'Never'
+                      };
+                      
+                      setUsers([...users, newUser]);
+                      saveUserToFirebase(newUser);
+                      logActivity('Add User', `Added new user: ${name} (${email})`, null);
+                      alert(`User ${name} added successfully!`);
+                    } else {
+                      const updatedUser = {
+                        ...editingItem.data,
+                        name,
+                        email,
+                        role,
+                        status
+                      };
+                      
+                      const updated = [...users];
+                      updated[editingItem.index] = updatedUser;
+                      setUsers(updated);
+                      saveUserToFirebase(updatedUser);
+                      logActivity('Edit User', `Updated user: ${name} (${email})`, null);
+                      alert(`User ${name} updated successfully!`);
+                    }
+                    
+                    setModal('');
+                    setEditingItem(null);
+                  }}
+                  className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+                >
+                  {modal === 'addUser' ? 'Add User' : 'Save Changes'}
                 </button>
               </div>
             </div>
@@ -3279,10 +3616,14 @@ const App = () => {
                     
                     if (modal === 'addCustomer') {
                       setCustomers([...customers, newCustomer]);
+                      saveCustomerToFirebase(newCustomer);
+                      logActivity('Add Customer', `Added customer: ${newCustomer.name}`, null);
                     } else {
                       const updated = [...customers];
                       updated[editingItem.index] = newCustomer;
                       setCustomers(updated);
+                      saveCustomerToFirebase(newCustomer);
+                      logActivity('Edit Customer', `Updated customer: ${newCustomer.name}`, null);
                     }
                     
                     setModal('');
@@ -3308,6 +3649,8 @@ const App = () => {
                 ? `Delete customer "${deleteConfirm.item.name}"? This action cannot be undone.${deleteConfirm.item.kegsOut > 0 ? ` This will affect ${deleteConfirm.item.kegsOut} kegs currently out.` : ''}`
                 : deleteConfirm.type === 'keg'
                 ? `Delete keg "${deleteConfirm.item.id}"? This action cannot be undone.`
+                : deleteConfirm.type === 'user'
+                ? `Delete user "${deleteConfirm.item.name}"? This action cannot be undone.`
                 : `Delete product "${deleteConfirm.item.name}"? This action cannot be undone.`
               }
             </p>
@@ -3319,16 +3662,16 @@ const App = () => {
                 No, Cancel
               </button>
               <button
-                onClick={() => {
+                onClick={async () => {
                   if (deleteConfirm.type === 'customer') {
                     // Return all kegs from this customer to the brewery
                     const customerName = deleteConfirm.item.name;
                     const customerId = deleteConfirm.item.id;
                     
-                    setKegs(kegs.map(keg => {
+                    const updatedKegs = kegs.map(keg => {
                       // Check if keg is associated with this customer
                       if (keg.customer === customerId || keg.location === customerName) {
-                        return {
+                        const returnedKeg = {
                           ...keg,
                           status: 'Empty',
                           location: 'Brewery',
@@ -3337,17 +3680,34 @@ const App = () => {
                           daysOut: 0,
                           deposit: 0
                         };
+                        saveKegToFirebase(returnedKeg);
+                        return returnedKeg;
                       }
                       return keg;
-                    }));
+                    });
                     
-                    // Delete the customer
+                    setKegs(updatedKegs);
+                    
+                    // Delete the customer from Firebase
+                    await deleteDoc(doc(db, 'customers', customerId));
                     setCustomers(customers.filter(c => c.id !== deleteConfirm.item.id));
+                    logActivity('Delete Customer', `Deleted customer: ${customerName}`, null);
                   } else if (deleteConfirm.type === 'keg') {
-                    // Delete the keg
+                    // Delete the keg from Firebase
+                    const kegToDelete = kegs[deleteConfirm.index];
+                    await deleteDoc(doc(db, 'kegs', kegToDelete.id));
                     setKegs(kegs.filter((_, i) => i !== deleteConfirm.index));
+                    logActivity('Delete Keg', `Deleted keg: ${kegToDelete.id}`, kegToDelete.id);
                   } else if (deleteConfirm.type === 'product') {
+                    const productToDelete = productList[deleteConfirm.index];
+                    await deleteProductFromFirebase(productToDelete);
                     setProductList(productList.filter((_, i) => i !== deleteConfirm.index));
+                    logActivity('Delete Product', `Deleted product: ${productToDelete.name}`, null);
+                  } else if (deleteConfirm.type === 'user') {
+                    const userToDelete = deleteConfirm.item;
+                    await deleteUserFromFirebase(userToDelete.id);
+                    setUsers(users.filter((_, i) => i !== deleteConfirm.index));
+                    logActivity('Delete User', `Deleted user: ${userToDelete.name}`, null);
                   }
                   setDeleteConfirm(null);
                 }}
