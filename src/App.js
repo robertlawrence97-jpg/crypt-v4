@@ -1266,7 +1266,7 @@ const App = () => {
                             .bindPopup(`<strong>${customer.name}</strong><br>${customer.kegsOut} keg${customer.kegsOut !== 1 ? 's' : ''} out<br>📍 ${customer.address || 'Address on file'}`);
                         });
                       }
-                    }, [customersWithKegs.length]);
+                    }, [customersWithKegs.length);
                     
                     return (
                       <div id={mapId} style={{ width: '100%', height: '100%', borderRadius: '0.5rem' }} />
