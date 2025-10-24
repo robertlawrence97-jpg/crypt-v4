@@ -2011,7 +2011,7 @@ const App = () => {
                   </div>
                   <button 
                     onClick={() => {
-                      if (confirm('Are you sure you want to logout?')) {
+                      if (window.confirm('Are you sure you want to logout?')) {
                         // In production, this would clear Firebase auth session
                         alert('Logout functionality will be implemented with Firebase Authentication');
                         // For now, just redirect to login page or refresh
