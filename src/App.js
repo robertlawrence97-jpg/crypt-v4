@@ -130,6 +130,15 @@ const App = () => {
   const [bulkOperationData, setBulkOperationData] = useState({});
   const [cameraInitialized, setCameraInitialized] = useState(false);
 
+  // Initialize barcode field when editing a keg
+  useEffect(() => {
+    if (modal === 'editKeg' && editingItem?.data?.barcode) {
+      setScannedBarcodeForInventory(editingItem.data.barcode);
+    } else if (modal === 'addKeg') {
+      setScannedBarcodeForInventory('');
+    }
+  }, [modal, editingItem]);
+
   // Authentication listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -4079,7 +4088,10 @@ const App = () => {
             {/* Fixed Header */}
             <div className="flex-shrink-0 flex justify-between items-center px-5 py-3 border-b bg-white rounded-t-2xl">
               <h3 className="text-lg font-bold">Add New Keg</h3>
-              <button onClick={() => setModal('')} className="text-gray-500 hover:text-gray-700">
+              <button onClick={() => { 
+                setModal(''); 
+                setScannedBarcodeForInventory('');
+              }} className="text-gray-500 hover:text-gray-700">
                 <X size={20} />
               </button>
             </div>
@@ -4099,13 +4111,25 @@ const App = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold mb-1">Barcode</label>
-                    <input
-                      id="newKegBarcode"
-                      type="text"
-                      placeholder="Optional"
-                      className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
-                    />
+                    <label className="block text-xs font-semibold mb-1">Barcode *</label>
+                    <div className="flex gap-2">
+                      <input
+                        id="newKegBarcode"
+                        type="text"
+                        placeholder="Scan barcode..."
+                        value={scannedBarcodeForInventory}
+                        onChange={(e) => setScannedBarcodeForInventory(e.target.value)}
+                        className="flex-1 px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setScan(true)}
+                        className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center gap-1 text-sm"
+                      >
+                        <Camera size={16} />
+                        Scan
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -4183,7 +4207,10 @@ const App = () => {
             <div className="flex-shrink-0 border-t px-5 py-3 bg-gray-50 rounded-b-2xl">
               <div className="flex gap-2">
                 <button
-                  onClick={() => setModal('')}
+                  onClick={() => {
+                    setModal('');
+                    setScannedBarcodeForInventory('');
+                  }}
                   className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-semibold text-sm"
                 >
                   Cancel
@@ -4191,7 +4218,7 @@ const App = () => {
                 <button
                   onClick={() => {
                     const kegId = document.getElementById('newKegId').value.trim().toUpperCase();
-                    const barcode = document.getElementById('newKegBarcode').value.trim();
+                    const barcode = scannedBarcodeForInventory.trim();
                     const size = document.getElementById('newKegSize').value;
                     const owner = document.getElementById('newKegOwner').value;
                     const purchaseDate = document.getElementById('newKegPurchaseDate').value;
@@ -4203,12 +4230,17 @@ const App = () => {
                       return;
                     }
 
+                    if (!barcode) {
+                      alert('Please scan a barcode. Click the "Scan" button to use your camera.');
+                      return;
+                    }
+
                     if (kegs.find(k => k.id === kegId)) {
                       alert(`Keg ID "${kegId}" already exists. Please use a different ID.`);
                       return;
                     }
 
-                    if (barcode && kegs.find(k => k.barcode === barcode)) {
+                    if (kegs.find(k => k.barcode === barcode)) {
                       alert(`Barcode "${barcode}" is already assigned to another keg.`);
                       return;
                     }
@@ -4246,6 +4278,7 @@ const App = () => {
                     logActivity('Add Keg', `Added new keg ${kegId} (${size})`, kegId);
                     
                     setModal('');
+                    setScannedBarcodeForInventory(''); // Clear scanned barcode
                     alert(`Keg ${kegId} added successfully!`);
                   }}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold text-sm"
@@ -4265,7 +4298,11 @@ const App = () => {
             {/* Fixed Header */}
             <div className="flex-shrink-0 flex justify-between items-center px-5 py-3 border-b bg-white rounded-t-2xl">
               <h3 className="text-lg font-bold">Edit Keg</h3>
-              <button onClick={() => { setModal(''); setEditingItem(null); }} className="text-gray-500 hover:text-gray-700">
+              <button onClick={() => { 
+                setModal(''); 
+                setEditingItem(null); 
+                setScannedBarcodeForInventory('');
+              }} className="text-gray-500 hover:text-gray-700">
                 <X size={20} />
               </button>
             </div>
@@ -4287,14 +4324,25 @@ const App = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold mb-1">Barcode</label>
-                    <input
-                      id="editKegBarcode"
-                      type="text"
-                      defaultValue={editingItem.data.barcode}
-                      placeholder="Optional"
-                      className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
-                    />
+                    <label className="block text-xs font-semibold mb-1">Barcode *</label>
+                    <div className="flex gap-2">
+                      <input
+                        id="editKegBarcode"
+                        type="text"
+                        placeholder="Scan barcode..."
+                        value={scannedBarcodeForInventory || editingItem.data.barcode}
+                        onChange={(e) => setScannedBarcodeForInventory(e.target.value)}
+                        className="flex-1 px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setScan(true)}
+                        className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center gap-1 text-sm"
+                      >
+                        <Camera size={16} />
+                        Scan
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -4369,22 +4417,31 @@ const App = () => {
             <div className="flex-shrink-0 border-t px-5 py-3 bg-gray-50 rounded-b-2xl">
               <div className="flex gap-2">
                 <button
-                  onClick={() => { setModal(''); setEditingItem(null); }}
+                  onClick={() => { 
+                    setModal(''); 
+                    setEditingItem(null); 
+                    setScannedBarcodeForInventory('');
+                  }}
                   className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-semibold text-sm"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => {
-                    const barcode = document.getElementById('editKegBarcode').value.trim();
+                    const barcode = scannedBarcodeForInventory.trim();
                     const size = document.getElementById('editKegSize').value;
                     const owner = document.getElementById('editKegOwner').value;
                     const condition = document.getElementById('editKegCondition').value;
                     const deposit = parseInt(document.getElementById('editKegDeposit').value);
                     const notes = document.getElementById('editKegNotes').value.trim();
 
+                    if (!barcode) {
+                      alert('Barcode is required. Please scan a barcode.');
+                      return;
+                    }
+
                     // Check if barcode already exists on a different keg
-                    if (barcode && kegs.find(k => k.barcode === barcode && k.id !== editingItem.data.id)) {
+                    if (kegs.find(k => k.barcode === barcode && k.id !== editingItem.data.id)) {
                       alert(`Barcode "${barcode}" is already assigned to another keg.`);
                       return;
                     }
@@ -4408,6 +4465,7 @@ const App = () => {
                     
                     setModal('');
                     setEditingItem(null);
+                    setScannedBarcodeForInventory('');
                     logActivity('Edit Keg', `Updated keg ${updatedKeg.id}`, updatedKeg.id);
                     alert(`Keg ${updatedKeg.id} updated successfully!`);
                   }}
