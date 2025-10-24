@@ -124,6 +124,11 @@ const App = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [showKegHistory, setShowKegHistory] = useState(null); // keg id to show history for
   const [quickActionMenu, setQuickActionMenu] = useState(false);
+  const [batchScanResults, setBatchScanResults] = useState([]);
+  const [showBatchResults, setShowBatchResults] = useState(false);
+  const [bulkOperationModal, setBulkOperationModal] = useState(null);
+  const [bulkOperationData, setBulkOperationData] = useState({});
+  const [cameraInitialized, setCameraInitialized] = useState(false);
 
   // Authentication listener
   useEffect(() => {
@@ -437,6 +442,7 @@ const App = () => {
       if (vid.current) {
         console.log('✅ Attaching stream to video element');
         vid.current.srcObject = stream;
+        setCameraInitialized(true); // Mark camera as initialized
         vid.current.addEventListener('loadedmetadata', () => {
           console.log('📹 Video playing');
           vid.current.play().catch(err => console.error('Play error:', err));
@@ -613,6 +619,7 @@ const App = () => {
         console.log('✅ Video track stopped');
       });
       vid.current.srcObject = null;
+      setCameraInitialized(false); // Reset camera initialized flag
     }
   };
 
@@ -984,12 +991,6 @@ const App = () => {
               </div>
             </div>
             <div className="flex gap-3 items-center">
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className="p-2 bg-white text-black rounded-lg hover:bg-gray-200"
-              >
-                {darkMode ? '☀️' : '🌙'}
-              </button>
               <div className={`text-right hidden sm:block ${darkMode ? 'text-gray-300' : 'text-white'}`}>
                 <p className="text-sm font-semibold">{currentUser?.name}</p>
                 <p className="text-xs">{currentUser?.role}</p>
@@ -1433,28 +1434,8 @@ const App = () => {
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
                   <button 
                     onClick={() => {
-                      const product = prompt('Enter product name for all selected kegs:');
-                      if (!product) return;
-                      
-                      const customer = prompt('Enter customer ID (leave empty if staying at brewery):');
-                      
-                      const selectedKegObjs = kegs.filter(k => selectedItems.includes(k.id));
-                      selectedKegObjs.forEach(k => {
-                        const updatedKeg = {
-                          ...k,
-                          product,
-                          status: customer ? 'At Customer' : 'Filled',
-                          customer: customer || '',
-                          fillDate: new Date().toISOString().split('T')[0],
-                          shipDate: customer ? new Date().toISOString().split('T')[0] : '',
-                          location: customer ? customers.find(c => c.id === customer)?.name || 'Customer' : 'Brewery'
-                        };
-                        setKegs(prev => prev.map(keg => keg.id === k.id ? updatedKeg : keg));
-                        saveKegToFirebase(updatedKeg);
-                        logActivity('Bulk Fill', `Filled keg ${k.id} with ${product}`, k.id);
-                      });
-                      alert(`Filled ${selectedItems.length} kegs with ${product}`);
-                      setSelectedItems([]);
+                      setBulkOperationModal('fill');
+                      setBulkOperationData({});
                     }}
                     className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-semibold"
                   >
@@ -1463,11 +1444,8 @@ const App = () => {
                   </button>
                   <button 
                     onClick={() => {
-                      selectedItems.forEach(id => {
-                        logActivity('Bulk Ship', `Shipped keg ${id}`, id);
-                      });
-                      alert(`Shipped ${selectedItems.length} kegs`);
-                      setSelectedItems([]);
+                      setBulkOperationModal('ship');
+                      setBulkOperationData({});
                     }}
                     className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-semibold"
                   >
@@ -1476,11 +1454,8 @@ const App = () => {
                   </button>
                   <button 
                     onClick={() => {
-                      selectedItems.forEach(id => {
-                        logActivity('Bulk Return', `Returned keg ${id}`, id);
-                      });
-                      alert(`Returned ${selectedItems.length} kegs`);
-                      setSelectedItems([]);
+                      setBulkOperationModal('return');
+                      setBulkOperationData({});
                     }}
                     className="px-3 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 text-sm font-semibold"
                   >
@@ -2062,15 +2037,15 @@ const App = () => {
                 </div>
                 <div className="space-y-2">
                   {users.map((u, idx) => (
-                    <div key={idx} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
-                      <div className="flex-1">
-                        <p className="font-semibold">{u.name}</p>
-                        <p className="text-sm text-gray-600">{u.email}</p>
+                    <div key={idx} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 gap-3">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold truncate">{u.name}</p>
+                        <p className="text-sm text-gray-600 truncate">{u.email}</p>
                         <p className="text-xs text-gray-500 mt-1">
                           Last login: {u.lastLogin} · Created: {u.createdDate}
                         </p>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                           u.role === 'Admin' ? 'bg-purple-100 text-purple-700' :
                           u.role === 'Manager' ? 'bg-blue-100 text-blue-700' :
@@ -2125,12 +2100,12 @@ const App = () => {
               </div>
               <div className="space-y-2">
                 {productList.map((p, idx) => (
-                  <div key={idx} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
-                    <div>
+                  <div key={idx} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 gap-3">
+                    <div className="flex-1 min-w-0">
                       <p className="font-semibold">{p.name}</p>
                       <p className="text-sm text-gray-600">{p.style} · {p.abv}% ABV · {p.ibu} IBU</p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                         p.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
                       }`}>
@@ -2165,6 +2140,19 @@ const App = () => {
             <div className="bg-white p-6 rounded-xl shadow-lg">
               <h3 className="text-xl font-bold mb-4">System Settings</h3>
               <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <p className="font-semibold">Theme</p>
+                    <p className="text-sm text-gray-600">Switch between light and dark mode</p>
+                  </div>
+                  <button
+                    onClick={() => setDarkMode(!darkMode)}
+                    className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 flex items-center gap-2"
+                  >
+                    {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
+                  </button>
+                </div>
+                
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div>
                     <p className="font-semibold">Camera Permission</p>
@@ -2212,12 +2200,15 @@ const App = () => {
                     <p className="text-sm text-red-600">Sign out of your account</p>
                   </div>
                   <button 
-                    onClick={() => {
+                    onClick={async () => {
                       if (window.confirm('Are you sure you want to logout?')) {
-                        // In production, this would clear Firebase auth session
-                        alert('Logout functionality will be implemented with Firebase Authentication');
-                        // For now, just redirect to login page or refresh
-                        window.location.reload();
+                        try {
+                          await signOut(auth);
+                          // Auth state listener will handle redirecting to login
+                        } catch (error) {
+                          console.error('Logout error:', error);
+                          alert('Failed to logout: ' + error.message);
+                        }
                       }
                     }}
                     className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2 font-semibold"
@@ -2714,7 +2705,7 @@ const App = () => {
                     <div className="absolute -top-2 -right-2 w-16 h-16 border-t-8 border-r-8 border-red-400 rounded-tr-xl"></div>
                     <div className="absolute -bottom-2 -left-2 w-16 h-16 border-b-8 border-l-8 border-red-400 rounded-bl-xl"></div>
                     <div className="absolute -bottom-2 -right-2 w-16 h-16 border-b-8 border-r-8 border-red-400 rounded-br-xl"></div>
-                    {!vid.current?.srcObject && (
+                    {!cameraInitialized && (
                       <p className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white bg-black bg-opacity-60 px-4 py-2 rounded-lg font-bold">
                         Starting Camera...
                       </p>
@@ -2731,7 +2722,7 @@ const App = () => {
                 </div>
               ) : (
                 <p className="text-center mt-3 text-sm text-gray-600">
-                  {vid.current?.srcObject ? 'Camera active - Position barcode in red frame' : 'Activating camera...'}
+                  {cameraInitialized ? 'Camera active - Position barcode in red frame' : 'Activating camera...'}
                 </p>
               )}
             </div>
@@ -4411,6 +4402,210 @@ const App = () => {
                   Save Changes
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Fill Modal */}
+      {bulkOperationModal === 'fill' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">Fill Kegs</h2>
+                <button onClick={() => setBulkOperationModal(null)} className="text-gray-500 hover:text-gray-700">
+                  <X size={24} />
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Product</label>
+                  <select
+                    value={bulkOperationData.product || ''}
+                    onChange={(e) => setBulkOperationData({...bulkOperationData, product: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Select Product</option>
+                    {products.filter(p => p.active).map(p => (
+                      <option key={p.name} value={p.name}>
+                        {p.name} ({p.abv}% ABV)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Batch Number</label>
+                  <input
+                    type="text"
+                    placeholder="B2024-XXX"
+                    value={bulkOperationData.batchNumber || ''}
+                    onChange={(e) => setBulkOperationData({...bulkOperationData, batchNumber: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+              
+              <button
+                onClick={() => {
+                  if (!bulkOperationData.product) {
+                    alert('Please select a product');
+                    return;
+                  }
+                  
+                  const selectedKegObjs = kegs.filter(k => selectedItems.includes(k.id));
+                  selectedKegObjs.forEach(k => {
+                    const updatedKeg = {
+                      ...k,
+                      product: bulkOperationData.product,
+                      batchNumber: bulkOperationData.batchNumber || '',
+                      status: 'Filled',
+                      fillDate: new Date().toISOString().split('T')[0],
+                      location: 'Brewery'
+                    };
+                    setKegs(prev => prev.map(keg => keg.id === k.id ? updatedKeg : keg));
+                    saveKegToFirebase(updatedKeg);
+                    logActivity('Bulk Fill', `Filled keg ${k.id} with ${bulkOperationData.product}`, k.id);
+                  });
+                  alert(`Filled ${selectedItems.length} kegs with ${bulkOperationData.product}`);
+                  setSelectedItems([]);
+                  setBulkOperationModal(null);
+                  setBulkOperationData({});
+                }}
+                className="w-full mt-6 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+              >
+                Fill Kegs
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Ship Modal */}
+      {bulkOperationModal === 'ship' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">Ship to Customer</h2>
+                <button onClick={() => setBulkOperationModal(null)} className="text-gray-500 hover:text-gray-700">
+                  <X size={24} />
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Customer</label>
+                  <select
+                    value={bulkOperationData.customer || ''}
+                    onChange={(e) => setBulkOperationData({...bulkOperationData, customer: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  >
+                    <option value="">Select Customer</option>
+                    {customers.filter(c => c.status === 'Active').map(c => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              
+              <button
+                onClick={() => {
+                  if (!bulkOperationData.customer) {
+                    alert('Please select a customer');
+                    return;
+                  }
+                  
+                  const selectedKegObjs = kegs.filter(k => selectedItems.includes(k.id));
+                  const customer = customers.find(c => c.id === bulkOperationData.customer);
+                  
+                  selectedKegObjs.forEach(k => {
+                    const updatedKeg = {
+                      ...k,
+                      status: 'At Customer',
+                      customer: bulkOperationData.customer,
+                      shipDate: new Date().toISOString().split('T')[0],
+                      location: customer?.name || 'Customer'
+                    };
+                    setKegs(prev => prev.map(keg => keg.id === k.id ? updatedKeg : keg));
+                    saveKegToFirebase(updatedKeg);
+                    logActivity('Bulk Ship', `Shipped keg ${k.id} to ${customer?.name}`, k.id);
+                  });
+                  
+                  alert(`Shipped ${selectedItems.length} kegs to ${customer?.name}`);
+                  setSelectedItems([]);
+                  setBulkOperationModal(null);
+                  setBulkOperationData({});
+                }}
+                className="w-full mt-6 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold"
+              >
+                Ship Kegs
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Return Modal */}
+      {bulkOperationModal === 'return' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">Process Return</h2>
+                <button onClick={() => setBulkOperationModal(null)} className="text-gray-500 hover:text-gray-700">
+                  <X size={24} />
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Condition</label>
+                  <select
+                    value={bulkOperationData.condition || 'Good'}
+                    onChange={(e) => setBulkOperationData({...bulkOperationData, condition: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                  >
+                    <option value="Good">Good</option>
+                    <option value="Needs Cleaning">Needs Cleaning</option>
+                    <option value="Damaged">Damaged</option>
+                  </select>
+                </div>
+              </div>
+              
+              <button
+                onClick={() => {
+                  const selectedKegObjs = kegs.filter(k => selectedItems.includes(k.id));
+                  
+                  selectedKegObjs.forEach(k => {
+                    const updatedKeg = {
+                      ...k,
+                      status: 'Empty',
+                      condition: bulkOperationData.condition || 'Good',
+                      returnDate: new Date().toISOString().split('T')[0],
+                      location: 'Brewery',
+                      customer: '',
+                      product: '',
+                      batchNumber: ''
+                    };
+                    setKegs(prev => prev.map(keg => keg.id === k.id ? updatedKeg : keg));
+                    saveKegToFirebase(updatedKeg);
+                    logActivity('Bulk Return', `Returned keg ${k.id} in ${bulkOperationData.condition || 'Good'} condition`, k.id);
+                  });
+                  
+                  alert(`Processed return for ${selectedItems.length} kegs`);
+                  setSelectedItems([]);
+                  setBulkOperationModal(null);
+                  setBulkOperationData({});
+                }}
+                className="w-full mt-6 px-4 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-semibold"
+              >
+                Process Return
+              </button>
             </div>
           </div>
         </div>
