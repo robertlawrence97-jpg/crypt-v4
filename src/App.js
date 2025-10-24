@@ -5,6 +5,9 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, addDoc, serverTimestamp, query, orderBy, deleteDoc, updateDoc } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth';
 
+// Leaflet CSS - must be imported before any map components
+import 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAf3KJFgXz7i4UjryWQNGD2bH9uedTeYVY",
@@ -1172,33 +1175,79 @@ const App = () => {
                 </h3>
                 <div className="bg-gray-100 rounded-lg overflow-hidden relative" style={{ height: '400px' }}>
                   {(() => {
-                    // Brewery location
+                    // Brewery location (Windsor, CT)
                     const breweryLat = 41.8268;
                     const breweryLng = -72.6686;
                     
-                    // Get customers with kegs and their coordinates
-                    const customersWithKegs = customers.filter(c => c.kegsOut > 0 && c.address);
+                    // Get customers with kegs
+                    const customersWithKegs = customers.filter(c => c.kegsOut > 0);
                     
-                    // Build markers string for Google Maps
-                    let markers = `color:blue|label:B|${breweryLat},${breweryLng}`;
+                    // Create unique map ID
+                    const mapId = 'customer-map-' + Date.now();
                     
-                    customersWithKegs.forEach((customer, idx) => {
-                      // Mock coordinates around Windsor, CT area - in real app, geocode addresses
-                      const lat = 41.8268 + (Math.random() - 0.5) * 0.2;
-                      const lng = -72.6686 + (Math.random() - 0.5) * 0.2;
-                      markers += `&markers=color:red|label:${idx + 1}|${lat},${lng}`;
-                    });
+                    // Initialize Leaflet map after component mounts
+                    React.useEffect(() => {
+                      // Load Leaflet library
+                      if (!window.L) {
+                        const script = document.createElement('script');
+                        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+                        script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+                        script.crossOrigin = '';
+                        script.onload = initMap;
+                        document.head.appendChild(script);
+                      } else {
+                        initMap();
+                      }
+                      
+                      function initMap() {
+                        const mapElement = document.getElementById(mapId);
+                        if (!mapElement || mapElement._leaflet_id) return;
+                        
+                        // Create map centered on brewery
+                        const map = window.L.map(mapId).setView([breweryLat, breweryLng], 11);
+                        
+                        // Add OpenStreetMap tiles
+                        window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                          attribution: '© OpenStreetMap contributors',
+                          maxZoom: 19
+                        }).addTo(map);
+                        
+                        // Custom brewery icon (blue house)
+                        const breweryIcon = window.L.divIcon({
+                          html: '<div style="background: #2563eb; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🏠</div>',
+                          iconSize: [32, 32],
+                          iconAnchor: [16, 16],
+                          className: 'custom-icon'
+                        });
+                        
+                        // Add brewery marker
+                        window.L.marker([breweryLat, breweryLng], { icon: breweryIcon })
+                          .addTo(map)
+                          .bindPopup('<strong>Dudleytown Brewing Co.</strong><br>Windsor, CT<br>🏭 Brewery Location');
+                        
+                        // Add customer markers
+                        customersWithKegs.forEach((customer, idx) => {
+                          // Mock coordinates around Windsor, CT area
+                          const lat = breweryLat + (Math.random() - 0.5) * 0.2;
+                          const lng = breweryLng + (Math.random() - 0.5) * 0.2;
+                          
+                          // Custom customer icon (red circle with number)
+                          const customerIcon = window.L.divIcon({
+                            html: `<div style="background: #ef4444; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${idx + 1}</div>`,
+                            iconSize: [28, 28],
+                            iconAnchor: [14, 14],
+                            className: 'custom-icon'
+                          });
+                          
+                          window.L.marker([lat, lng], { icon: customerIcon })
+                            .addTo(map)
+                            .bindPopup(`<strong>${customer.name}</strong><br>${customer.kegsOut} keg${customer.kegsOut !== 1 ? 's' : ''} out<br>📍 ${customer.address || 'Address on file'}`);
+                        });
+                      }
+                    }, [customersWithKegs.length]);
                     
                     return (
-                      <iframe
-                        width="100%"
-                        height="100%"
-                        style={{ border: 0 }}
-                        loading="lazy"
-                        allowFullScreen
-                        referrerPolicy="no-referrer-when-downgrade"
-                        src={`https://www.google.com/maps/embed/v1/view?key=AIzaSyAf3KJFgXz7i4UjryWQNGD2bH9uedTeYVY&center=${breweryLat},${breweryLng}&zoom=11`}
-                      />
+                      <div id={mapId} style={{ width: '100%', height: '100%', borderRadius: '0.5rem' }} />
                     );
                   })()}
                 </div>
