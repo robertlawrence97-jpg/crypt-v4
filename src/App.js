@@ -1184,31 +1184,17 @@ const App = () => {
                     
                     // Initialize Leaflet map after component mounts
                     React.useEffect(() => {
-                      // Load Leaflet CSS dynamically
+                      // Load Leaflet CSS
                       if (!document.getElementById('leaflet-css')) {
                         const link = document.createElement('link');
                         link.id = 'leaflet-css';
-                        link.rel = 'stylesheet'; // Specify it's a stylesheet
-                        // Use a CDN for Leaflet CSS, replace with your local path if applicable
-                        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'; 
-                        document.head.appendChild(link); // Append the link to the document head
+                        link.rel = 'stylesheet';
+                        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+                        link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
+                        link.crossOrigin = '';
+                        document.head.appendChild(link);
                       }
-                      // *** Your Leaflet map initialization logic will go here ***
-                      // For example:
-                      // const map = L.map('map-id').setView([51.505, -0.09], 13);
-                      // L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                      //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                      // }).addTo(map);
-
-                      // Optional: Clean up the map on component unmount
-                      return () => {
-                        // if (map) {
-                        //   map.remove();
-                        // }
-                        // You might also want to remove the dynamically added CSS if it's only for this component
-                      };
-                    }, []); // Add an empty dependency array to run only once after initial render
-
+                      
                       // Load Leaflet library
                       if (!window.L) {
                         const script = document.createElement('script');
@@ -1266,7 +1252,7 @@ const App = () => {
                             .bindPopup(`<strong>${customer.name}</strong><br>${customer.kegsOut} keg${customer.kegsOut !== 1 ? 's' : ''} out<br>📍 ${customer.address || 'Address on file'}`);
                         });
                       }
-                    } [customersWithKegs.length);
+                    }, [customersWithKegs.length]);
                     
                     return (
                       <div id={mapId} style={{ width: '100%', height: '100%', borderRadius: '0.5rem' }} />
