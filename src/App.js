@@ -916,43 +916,18 @@ const App = () => {
   // Show loading while checking auth
   if (authLoading) {
     return (
-      <>
-        <style>{`
-          ${darkMode ? `
-            /* Dark mode modal styles */
-            .bg-white { background-color: #1f2937 !important; }
-            .text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600 { color: #e5e7eb !important; }
-            .border-gray-300 { border-color: #4b5563 !important; }
-            input, select, textarea { background-color: #374151 !important; color: white !important; border-color: #4b5563 !important; }
-            label { color: #d1d5db !important; }
-            .bg-gray-50 { background-color: #374151 !important; }
-          ` : ''}
-        `}</style>
-        <div className={`min-h-screen flex items-center justify-center ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Loading...</p>
-          </div>
+      <div className={`min-h-screen flex items-center justify-center ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Loading...</p>
         </div>
-      </>
+      </div>
     );
   }
 
   // Show login screen if not authenticated
   if (view === 'login') {
     return (
-      <>
-        <style>{`
-          ${darkMode ? `
-            /* Dark mode modal styles */
-            .bg-white { background-color: #1f2937 !important; }
-            .text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600 { color: #e5e7eb !important; }
-            .border-gray-300 { border-color: #4b5563 !important; }
-            input, select, textarea { background-color: #374151 !important; color: white !important; border-color: #4b5563 !important; }
-            label { color: #d1d5db !important; }
-            .bg-gray-50 { background-color: #374151 !important; }
-          ` : ''}
-        `}</style>
       <div className={`min-h-screen flex items-center justify-center ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
         <div className={`max-w-md w-full mx-4 ${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-2xl p-8`}>
           <div className="text-center mb-8">
@@ -1034,31 +1009,11 @@ const App = () => {
           </div>
         </div>
       </div>
-      </>
     );
   }
 
   return (
-    <>
-      <style>{`
-        ${darkMode ? `
-          /* Dark mode modal styles */
-          .bg-white:not(.hover\\:bg-white):not(.bg-gradient-to-r) { background-color: #1f2937 !important; }
-          .text-gray-900:not(.hover\\:text-gray-900), 
-          .text-gray-800:not(.hover\\:text-gray-800), 
-          .text-gray-700:not(.hover\\:text-gray-700), 
-          .text-gray-600:not(.hover\\:text-gray-600) { color: #e5e7eb !important; }
-          .border-gray-300 { border-color: #4b5563 !important; }
-          input:not([type="checkbox"]), select, textarea { 
-            background-color: #374151 !important; 
-            color: white !important; 
-            border-color: #4b5563 !important; 
-          }
-          label { color: #d1d5db !important; }
-          .bg-gray-50:not(.hover\\:bg-gray-50) { background-color: #374151 !important; }
-        ` : ''}
-      `}</style>
-      <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* Header */}
       <div className="bg-gradient-to-r from-gray-900 to-black text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -4906,7 +4861,6 @@ const App = () => {
       )}
 
     </div>
-    </>
   );
 };
 
