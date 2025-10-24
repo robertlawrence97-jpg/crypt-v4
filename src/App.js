@@ -107,6 +107,7 @@ const App = () => {
     customers: [],
     products: [],
     locations: [],
+    sizes: [],
     daysOutMin: '',
     daysOutMax: '',
     conditions: []
@@ -890,6 +891,7 @@ const App = () => {
     const matchesCustomer = advancedFilters.customers.length === 0 || advancedFilters.customers.includes(k.customer);
     const matchesProduct = advancedFilters.products.length === 0 || advancedFilters.products.includes(k.product);
     const matchesLocation = advancedFilters.locations.length === 0 || advancedFilters.locations.includes(k.location);
+    const matchesSize = advancedFilters.sizes.length === 0 || advancedFilters.sizes.includes(k.size);
     const matchesCondition = advancedFilters.conditions.length === 0 || advancedFilters.conditions.includes(k.condition);
     
     const matchesDaysOut = (!advancedFilters.daysOutMin || k.daysOut >= parseInt(advancedFilters.daysOutMin)) &&
@@ -899,7 +901,7 @@ const App = () => {
                              (!advancedFilters.dateRange.end || !k.fillDate || k.fillDate <= advancedFilters.dateRange.end);
     
     return matchesSearch && matchesStatus && matchesAdvancedStatus && matchesCustomer && 
-           matchesProduct && matchesLocation && matchesCondition && matchesDaysOut && matchesDateRange;
+           matchesProduct && matchesLocation && matchesSize && matchesCondition && matchesDaysOut && matchesDateRange;
   });
 
   // Show loading while checking auth
@@ -1348,6 +1350,29 @@ const App = () => {
                   </div>
                   
                   <div>
+                    <label className="block text-sm font-semibold mb-2">Keg Size</label>
+                    <div className="space-y-2">
+                      {['15.5 gal', '7.75 gal', '5.16 gal'].map(size => (
+                        <label key={size} className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={advancedFilters.sizes.includes(size)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setAdvancedFilters({...advancedFilters, sizes: [...advancedFilters.sizes, size]});
+                              } else {
+                                setAdvancedFilters({...advancedFilters, sizes: advancedFilters.sizes.filter(s => s !== size)});
+                              }
+                            }}
+                            className="rounded"
+                          />
+                          <span className="text-sm">{size}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
                     <label className="block text-sm font-semibold mb-2">Days Out Range</label>
                     <div className="flex gap-2">
                       <input
@@ -1413,7 +1438,7 @@ const App = () => {
                   <button
                     onClick={() => setAdvancedFilters({
                       statuses: [], dateRange: { start: '', end: '' },
-                      customers: [], products: [], locations: [],
+                      customers: [], products: [], locations: [], sizes: [],
                       daysOutMin: '', daysOutMax: '', conditions: []
                     })}
                     className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
@@ -4082,7 +4107,7 @@ const App = () => {
       )}
 
       {/* Add Keg Modal */}
-      {modal === 'addKeg' && (
+      {modal === 'addKeg' && !scan && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-xl h-[50vh] flex flex-col shadow-2xl">
             {/* Fixed Header */}
@@ -4144,7 +4169,6 @@ const App = () => {
                       <option value="15.5 gal">15.5 gal (Half Barrel)</option>
                       <option value="7.75 gal">7.75 gal (Quarter Barrel)</option>
                       <option value="5.16 gal">5.16 gal (Sixth Barrel)</option>
-                      <option value="5.0 gal">5.0 gal (Corny Keg)</option>
                     </select>
                   </div>
 
@@ -4292,7 +4316,7 @@ const App = () => {
       )}
 
       {/* Edit Keg Modal */}
-      {modal === 'editKeg' && editingItem && (
+      {modal === 'editKeg' && editingItem && !scan && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-xl h-[50vh] flex flex-col shadow-2xl">
             {/* Fixed Header */}
@@ -4357,7 +4381,6 @@ const App = () => {
                       <option value="15.5 gal">15.5 gal (Half Barrel)</option>
                       <option value="7.75 gal">7.75 gal (Quarter Barrel)</option>
                       <option value="5.16 gal">5.16 gal (Sixth Barrel)</option>
-                      <option value="5.0 gal">5.0 gal (Corny Keg)</option>
                     </select>
                   </div>
 
