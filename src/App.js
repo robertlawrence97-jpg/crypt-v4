@@ -1506,14 +1506,14 @@ const App = () => {
                         placeholder="Min"
                         value={advancedFilters.daysOutMin}
                         onChange={(e) => setAdvancedFilters({...advancedFilters, daysOutMin: e.target.value})}
-                        className={`w-full px-3 py-2 border rounded-lg ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}"
+                        className={`w-full px-3 py-2 border rounded-lg ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"`}
                       />
                       <input
                         type="number"
                         placeholder="Max"
                         value={advancedFilters.daysOutMax}
                         onChange={(e) => setAdvancedFilters({...advancedFilters, daysOutMax: e.target.value})}
-                        className={`w-full px-3 py-2 border rounded-lg ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}"
+                        className={`w-full px-3 py-2 border rounded-lg ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"`}
                       />
                     </div>
                   </div>
@@ -1548,13 +1548,13 @@ const App = () => {
                         type="date"
                         value={advancedFilters.dateRange.start}
                         onChange={(e) => setAdvancedFilters({...advancedFilters, dateRange: {...advancedFilters.dateRange, start: e.target.value}})}
-                        className={`w-full px-3 py-2 border rounded-lg ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}"
+                        className={`w-full px-3 py-2 border rounded-lg ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"`}
                       />
                       <input
                         type="date"
                         value={advancedFilters.dateRange.end}
                         onChange={(e) => setAdvancedFilters({...advancedFilters, dateRange: {...advancedFilters.dateRange, end: e.target.value}})}
-                        className={`w-full px-3 py-2 border rounded-lg ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}"
+                        className={`w-full px-3 py-2 border rounded-lg ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"`}
                       />
                     </div>
                   </div>
