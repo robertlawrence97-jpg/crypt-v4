@@ -932,7 +932,7 @@ const App = () => {
               <CryptKeeperLogo className="h-20 w-auto" />
             </div>
             <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-2`}>CryptKeeper</h1>
-            <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Keg Tracking System</p>
+            <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Dudleytown Brewing Co.</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-6">
@@ -1170,21 +1170,63 @@ const App = () => {
                   <MapPin className="text-blue-600" />
                   Customer Locations
                 </h3>
-                <div className="bg-gray-100 rounded-lg p-8 text-center">
-                  <MapPin size={48} className="mx-auto text-gray-400 mb-3" />
-                  <p className="text-gray-600 mb-2">Interactive Map View</p>
-                  <p className="text-sm text-gray-500">Showing {customers.filter(c => c.status === 'Active').length} active customer locations</p>
-                  <div className="mt-4 space-y-2">
-                    {customers.filter(c => c.kegsOut > 0).slice(0, 5).map(c => (
-                      <div key={c.id} className="flex justify-between items-center p-2 bg-white rounded">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-3 h-3 rounded-full ${c.kegsOut > 2 ? 'bg-red-500' : c.kegsOut > 0 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                          <span className="text-sm font-medium">{c.name}</span>
-                        </div>
-                        <span className="text-xs text-gray-500">{c.kegsOut} kegs</span>
-                      </div>
-                    ))}
+                <div className="bg-gray-100 rounded-lg overflow-hidden relative" style={{ height: '400px' }}>
+                  {(() => {
+                    // Brewery location
+                    const breweryLat = 41.8268;
+                    const breweryLng = -72.6686;
+                    
+                    // Get customers with kegs and their coordinates
+                    const customersWithKegs = customers.filter(c => c.kegsOut > 0 && c.address);
+                    
+                    // Build markers string for Google Maps
+                    let markers = `color:blue|label:B|${breweryLat},${breweryLng}`;
+                    
+                    customersWithKegs.forEach((customer, idx) => {
+                      // Mock coordinates around Windsor, CT area - in real app, geocode addresses
+                      const lat = 41.8268 + (Math.random() - 0.5) * 0.2;
+                      const lng = -72.6686 + (Math.random() - 0.5) * 0.2;
+                      markers += `&markers=color:red|label:${idx + 1}|${lat},${lng}`;
+                    });
+                    
+                    return (
+                      <iframe
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        loading="lazy"
+                        allowFullScreen
+                        referrerPolicy="no-referrer-when-downgrade"
+                        src={`https://www.google.com/maps/embed/v1/view?key=AIzaSyAf3KJFgXz7i4UjryWQNGD2bH9uedTeYVY&center=${breweryLat},${breweryLng}&zoom=11`}
+                      />
+                    );
+                  })()}
+                </div>
+                <div className="mt-4 space-y-2 max-h-48 overflow-y-auto">
+                  {/* Brewery Location */}
+                  <div className="flex justify-between items-center p-2 bg-blue-50 rounded border border-blue-200">
+                    <div className="flex items-center gap-2">
+                      <Home size={16} className="text-blue-600" />
+                      <span className="text-sm font-semibold text-blue-900">Dudleytown Brewing Co.</span>
+                    </div>
+                    <span className="text-xs text-blue-600">Windsor, CT</span>
                   </div>
+                  
+                  {/* Customers with kegs */}
+                  {customers.filter(c => c.kegsOut > 0).map((c, idx) => (
+                    <div key={c.id} className="flex justify-between items-center p-2 bg-white rounded border">
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                          {idx + 1}
+                        </div>
+                        <span className="text-sm font-medium">{c.name}</span>
+                      </div>
+                      <span className="text-xs text-gray-500">{c.kegsOut} keg{c.kegsOut !== 1 ? 's' : ''}</span>
+                    </div>
+                  ))}
+                  {customers.filter(c => c.kegsOut > 0).length === 0 && (
+                    <p className="text-sm text-gray-500 text-center py-2">No kegs currently at customer locations</p>
+                  )}
                 </div>
               </div>
 
