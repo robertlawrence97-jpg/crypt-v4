@@ -1392,7 +1392,7 @@ const App = () => {
         {view === 'inventory' && (
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-              <h2 className="text-2xl font-bold">Keg Inventory</h2>
+              <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"}">Keg Inventory</h2>
               <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                 <input
                   type="text"
@@ -1853,7 +1853,7 @@ const App = () => {
         {view === 'customers' && (
           <div className="space-y-4">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">Customer Management</h2>
+              <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"}">Customer Management</h2>
               <div className="flex gap-2">
                 <button onClick={() => { setEditingItem(null); setModal('addCustomer'); }} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
                   <Plus size={20} />
@@ -1872,7 +1872,7 @@ const App = () => {
                   <div>
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <h3 className="text-xl font-bold">{c.name}</h3>
+                        <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>{c.name}</h3>
                         <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-1 ${
                           c.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                         }`}>
@@ -1951,7 +1951,7 @@ const App = () => {
 
         {view === 'maintenance' && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Maintenance & Inspection</h2>
+            <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"}">Maintenance & Inspection</h2>
             
             {/* Maintenance Stats */}
             <div className="grid md:grid-cols-4 gap-4">
@@ -2037,7 +2037,7 @@ const App = () => {
 
         {view === 'reports' && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Reports & Analytics</h2>
+            <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"}">Reports & Analytics</h2>
             
             {/* Key Metrics */}
             <div className="grid md:grid-cols-3 gap-4">
@@ -2178,14 +2178,14 @@ const App = () => {
 
         {view === 'settings' && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Settings & Configuration</h2>
+            <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"}">Settings & Configuration</h2>
             
             {/* User Management - Admin Only */}
             {currentUser.role === 'Admin' && (
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <div className="flex justify-between items-center mb-4">
                   <div>
-                    <h3 className="text-xl font-bold">User Management</h3>
+                    <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>User Management</h3>
                     <p className="text-sm text-gray-600">Manage system users and permissions</p>
                   </div>
                   <button 
@@ -2250,7 +2250,7 @@ const App = () => {
             {/* Products Management */}
             <div className="bg-white p-6 rounded-xl shadow-lg">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold">Products</h3>
+                <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Products</h3>
                 <button 
                   onClick={() => { setEditingItem(null); setModal('addProduct'); }}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
@@ -2387,7 +2387,7 @@ const App = () => {
         {view === 'financial' && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Financial Dashboard</h2>
+              <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"}">Financial Dashboard</h2>
               <button 
                 onClick={() => exportData('financial')} 
                 className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 flex items-center gap-2"
@@ -2548,7 +2548,7 @@ const App = () => {
         {view === 'archive' && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Archive</h2>
+              <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"}">Archive</h2>
               <div className="text-sm text-gray-600">
                 {archivedKegs.length} kegs · {archivedCustomers.length} customers · {archivedProducts.length} products
               </div>
@@ -2734,7 +2734,7 @@ const App = () => {
       {/* Camera Permission Modal */}
       {showPermissionModal && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[100] p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full relative">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-8 max-w-md w-full relative">
             <button 
               onClick={() => {
                 setShowPermissionModal(false);
@@ -2800,7 +2800,7 @@ const App = () => {
       {/* Scanner Modal */}
       {scan && (
         <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 p-4" style={{ display: showPermissionModal ? 'none' : 'flex' }}>
-          <div className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between mb-4">
               <h3 className="text-2xl font-bold">Scan Barcode</h3>
               <button onClick={() => { setScan(false); stopCam(); setBatchMode(false); setSelectedKegs([]); }}>
@@ -2909,9 +2909,9 @@ const App = () => {
       {/* Transaction Management Modal */}
       {modal === 'trans' && sel && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Keg Management</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Keg Management</h3>
               <button onClick={() => setModal('')}>
                 <X size={24} />
               </button>
@@ -2987,9 +2987,9 @@ const App = () => {
       {/* Barcode Scan/Edit Modal */}
       {modal === 'editBarcode' && sel && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Scan/Edit Barcode</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Scan/Edit Barcode</h3>
               <button onClick={() => { setModal(''); setSel(null); }}>
                 <X size={24} />
               </button>
@@ -3077,9 +3077,9 @@ const App = () => {
       {/* Camera Barcode Scanner Modal */}
       {modal === 'scanBarcode' && sel && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-2xl w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-2xl w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Scan Barcode with Camera</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Scan Barcode with Camera</h3>
               <button onClick={() => { setModal('editBarcode'); stopCam(); }}>
                 <X size={24} />
               </button>
@@ -3137,9 +3137,9 @@ const App = () => {
       {/* Fill Form Modal */}
       {modal === 'fillForm' && sel && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Fill Keg</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Fill Keg</h3>
               <button onClick={() => setModal('trans')}>
                 <X size={24} />
               </button>
@@ -3186,9 +3186,9 @@ const App = () => {
       {/* Ship Form Modal */}
       {modal === 'shipForm' && sel && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Ship to Customer</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Ship to Customer</h3>
               <button onClick={() => setModal('trans')}>
                 <X size={24} />
               </button>
@@ -3224,9 +3224,9 @@ const App = () => {
       {/* Return Form Modal */}
       {modal === 'returnForm' && sel && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Process Return</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Process Return</h3>
               <button onClick={() => setModal('trans')}>
                 <X size={24} />
               </button>
@@ -3263,9 +3263,9 @@ const App = () => {
       {/* Maintenance Form Modal */}
       {modal === 'maintenanceForm' && sel && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Maintenance Details</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Maintenance Details</h3>
               <button onClick={() => setModal('trans')}>
                 <X size={24} />
               </button>
@@ -3299,9 +3299,9 @@ const App = () => {
       {/* Batch Fill Modal */}
       {modal === 'batchFill' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Batch Fill ({selectedKegs.length} kegs)</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Batch Fill ({selectedKegs.length} kegs)</h3>
               <button onClick={() => setModal('')}>
                 <X size={24} />
               </button>
@@ -3348,9 +3348,9 @@ const App = () => {
       {/* Batch Ship Modal */}
       {modal === 'batchShip' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Batch Ship ({selectedKegs.length} kegs)</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Batch Ship ({selectedKegs.length} kegs)</h3>
               <button onClick={() => setModal('')}>
                 <X size={24} />
               </button>
@@ -3386,9 +3386,9 @@ const App = () => {
       {/* Batch Return Modal */}
       {modal === 'batchReturn' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Batch Return ({selectedKegs.length} kegs)</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Batch Return ({selectedKegs.length} kegs)</h3>
               <button onClick={() => setModal('')}>
                 <X size={24} />
               </button>
@@ -3424,9 +3424,9 @@ const App = () => {
       {/* Batch Clean Modal */}
       {modal === 'batchClean' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Batch Clean & Inspect ({selectedKegs.length} kegs)</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Batch Clean & Inspect ({selectedKegs.length} kegs)</h3>
               <button onClick={() => setModal('')}>
                 <X size={24} />
               </button>
@@ -3457,9 +3457,9 @@ const App = () => {
       {/* Batch Repair Modal */}
       {modal === 'batchRepair' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Batch Repair Complete ({selectedKegs.length} kegs)</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Batch Repair Complete ({selectedKegs.length} kegs)</h3>
               <button onClick={() => setModal('')}>
                 <X size={24} />
               </button>
@@ -3490,9 +3490,9 @@ const App = () => {
       {/* Batch Maintenance Modal */}
       {modal === 'batchMaintenance' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Batch Flag for Maintenance ({selectedKegs.length} kegs)</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Batch Flag for Maintenance ({selectedKegs.length} kegs)</h3>
               <button onClick={() => setModal('')}>
                 <X size={24} />
               </button>
@@ -3526,9 +3526,9 @@ const App = () => {
       {/* Add/Edit Product Modal */}
       {(modal === 'addProduct' || modal === 'editProduct') && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full my-auto">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full my-auto">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">{modal === 'addProduct' ? 'Add New Product' : 'Edit Product'}</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>{modal === 'addProduct' ? 'Add New Product' : 'Edit Product'}</h3>
               <button 
                 onClick={() => {
                   setModal('');
@@ -3655,9 +3655,9 @@ const App = () => {
       {/* Add/Edit User Modal - Admin Only */}
       {(modal === 'addUser' || modal === 'editUser') && currentUser.role === 'Admin' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full my-auto">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full my-auto">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">{modal === 'addUser' ? 'Add New User' : 'Edit User'}</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>{modal === 'addUser' ? 'Add New User' : 'Edit User'}</h3>
               <button 
                 onClick={() => {
                   setModal('');
@@ -3838,7 +3838,7 @@ const App = () => {
       {/* Add/Edit Customer Modal */}
       {(modal === 'addCustomer' || modal === 'editCustomer') && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-xl h-[50vh] flex flex-col shadow-2xl">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl w-full max-w-xl h-[50vh] flex flex-col shadow-2xl">
             {/* Fixed Header */}
             <div className="flex-shrink-0 flex justify-between items-center px-5 py-3 border-b bg-white rounded-t-2xl">
               <h3 className="text-lg font-bold">{modal === 'addCustomer' ? 'Add New Customer' : 'Edit Customer'}</h3>
@@ -4048,7 +4048,7 @@ const App = () => {
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <h3 className="text-xl font-bold mb-4 text-red-600">Are you sure?</h3>
             <p className="text-gray-700 mb-6">
               {deleteConfirm.type === 'customer' 
@@ -4129,7 +4129,7 @@ const App = () => {
       {/* Keg History Modal */}
       {showKegHistory && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md max-h-[70vh] flex flex-col shadow-2xl overflow-hidden">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl w-full max-w-md max-h-[70vh] flex flex-col shadow-2xl overflow-hidden">
             {/* Fixed Header */}
             <div className="flex-shrink-0 flex justify-between items-center px-5 py-3 border-b bg-white">
               <h3 className="text-lg font-bold">Keg History: {showKegHistory}</h3>
@@ -4234,7 +4234,7 @@ const App = () => {
       {/* Add Keg Modal */}
       {modal === 'addKeg' && !scan && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-xl h-[50vh] flex flex-col shadow-2xl">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl w-full max-w-xl h-[50vh] flex flex-col shadow-2xl">
             {/* Fixed Header */}
             <div className="flex-shrink-0 flex justify-between items-center px-5 py-3 border-b bg-white rounded-t-2xl">
               <h3 className="text-lg font-bold">Add New Keg</h3>
@@ -4443,7 +4443,7 @@ const App = () => {
       {/* Edit Keg Modal */}
       {modal === 'editKeg' && editingItem && !scan && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-xl h-[50vh] flex flex-col shadow-2xl">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl w-full max-w-xl h-[50vh] flex flex-col shadow-2xl">
             {/* Fixed Header */}
             <div className="flex-shrink-0 flex justify-between items-center px-5 py-3 border-b bg-white rounded-t-2xl">
               <h3 className="text-lg font-bold">Edit Keg</h3>
@@ -4630,10 +4630,10 @@ const App = () => {
       {/* Bulk Fill Modal */}
       {bulkOperationModal === 'fill' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl shadow-2xl max-w-md w-full">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Fill Kegs</h2>
+                <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"} text-gray-800">Fill Kegs</h2>
                 <button onClick={() => setBulkOperationModal(null)} className="text-gray-500 hover:text-gray-700">
                   <X size={24} />
                 </button>
@@ -4706,10 +4706,10 @@ const App = () => {
       {/* Bulk Ship Modal */}
       {bulkOperationModal === 'ship' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl shadow-2xl max-w-md w-full">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Ship to Customer</h2>
+                <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"} text-gray-800">Ship to Customer</h2>
                 <button onClick={() => setBulkOperationModal(null)} className="text-gray-500 hover:text-gray-700">
                   <X size={24} />
                 </button>
@@ -4773,10 +4773,10 @@ const App = () => {
       {/* Bulk Return Modal */}
       {bulkOperationModal === 'return' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl shadow-2xl max-w-md w-full">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Process Return</h2>
+                <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"} text-gray-800">Process Return</h2>
                 <button onClick={() => setBulkOperationModal(null)} className="text-gray-500 hover:text-gray-700">
                   <X size={24} />
                 </button>
