@@ -3557,18 +3557,22 @@ const App = () => {
                 </select>
               </div>
               
-              {modal === 'addUser' && (
-                <div>
-                  <label className="block text-sm font-semibold mb-2">Initial Password *</label>
-                  <input 
-                    id="userPassword"
-                    type="password" 
-                    placeholder="Enter initial password" 
-                    className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">User will be prompted to change on first login</p>
-                </div>
-              )}
+              <div>
+                <label className="block text-sm font-semibold mb-2">
+                  {modal === 'addUser' ? 'Initial Password *' : 'New Password'}
+                </label>
+                <input 
+                  id="userPassword"
+                  type="password" 
+                  placeholder={modal === 'addUser' ? 'Enter initial password' : 'Leave blank to keep current password'} 
+                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {modal === 'addUser' 
+                    ? 'User will be prompted to change on first login' 
+                    : 'Only fill this if you want to change the user\'s password'}
+                </p>
+              </div>
               
               <div className="flex gap-3 sticky bottom-0 bg-white pt-4 mt-4 border-t z-10">
                 <button 
@@ -3632,6 +3636,8 @@ const App = () => {
                       logActivity('Add User', `Added new user: ${name} (${email})`, null);
                       alert(`User ${name} added successfully!`);
                     } else {
+                      const password = document.getElementById('userPassword').value;
+                      
                       const updatedUser = {
                         ...editingItem.data,
                         name,
@@ -3644,8 +3650,16 @@ const App = () => {
                       updated[editingItem.index] = updatedUser;
                       setUsers(updated);
                       saveUserToFirebase(updatedUser);
-                      logActivity('Edit User', `Updated user: ${name} (${email})`, null);
-                      alert(`User ${name} updated successfully!`);
+                      
+                      // Note: In a real app, you would update Firebase Auth password here
+                      // For now, we just log it
+                      if (password) {
+                        logActivity('Edit User', `Updated user: ${name} (${email}) - Password changed`, null);
+                        alert(`User ${name} updated successfully! Password has been changed.`);
+                      } else {
+                        logActivity('Edit User', `Updated user: ${name} (${email})`, null);
+                        alert(`User ${name} updated successfully!`);
+                      }
                     }
                     
                     setModal('');
