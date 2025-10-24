@@ -417,9 +417,9 @@ const App = () => {
         }
         setErr('');
       } else {
-        // Normal mode: open manage modal
+        // Normal mode: open trans modal (transaction/manage modal)
         setSel(k);
-        setModal('manageKeg'); // Changed from '' to 'manageKeg'
+        setModal('trans'); // Fixed: open 'trans' modal instead of 'manageKeg'
         setErr('');
         // Log to Firebase
         saveTransactionToFirebase('Barcode Scanned', `Scanned keg ${k.id}`, k.id);
@@ -591,6 +591,14 @@ const App = () => {
     
     console.log('💾 Setting new kegs state - this will trigger localStorage save');
     setKegs(updated);
+    
+    // Save updated kegs to Firebase
+    kegsToUpdate.forEach(kegId => {
+      const updatedKeg = updated.find(k => k.id === kegId);
+      if (updatedKeg) {
+        saveKegToFirebase(updatedKeg);
+      }
+    });
     
     // Update customer stats
     if (type === 'ship' || type === 'return') {
@@ -3623,6 +3631,13 @@ const App = () => {
 
                     console.log('➕ Adding new keg:', newKeg);
                     setKegs([...kegs, newKeg]);
+                    
+                    // Save new keg to Firebase
+                    saveKegToFirebase(newKeg);
+                    
+                    // Log activity
+                    logActivity('Add Keg', `Added new keg ${kegId} (${size})`, kegId);
+                    
                     setModal('');
                     alert(`Keg ${kegId} added successfully!`);
                   }}
@@ -3780,6 +3795,10 @@ const App = () => {
                     const updated = [...kegs];
                     updated[editingItem.index] = updatedKeg;
                     setKegs(updated);
+                    
+                    // Save updated keg to Firebase
+                    saveKegToFirebase(updatedKeg);
+                    
                     setModal('');
                     setEditingItem(null);
                     logActivity('Edit Keg', `Updated keg ${updatedKeg.id}`, updatedKeg.id);
