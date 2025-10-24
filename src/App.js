@@ -5,9 +5,6 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, addDoc, serverTimestamp, query, orderBy, deleteDoc, updateDoc } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth';
 
-// Leaflet CSS - must be imported before any map components
-import 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAf3KJFgXz7i4UjryWQNGD2bH9uedTeYVY",
@@ -1187,6 +1184,17 @@ const App = () => {
                     
                     // Initialize Leaflet map after component mounts
                     React.useEffect(() => {
+                      // Load Leaflet CSS
+                      if (!document.getElementById('leaflet-css')) {
+                        const link = document.createElement('link');
+                        link.id = 'leaflet-css';
+                        link.rel = 'stylesheet';
+                        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+                        link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
+                        link.crossOrigin = '';
+                        document.head.appendChild(link);
+                      }
+                      
                       // Load Leaflet library
                       if (!window.L) {
                         const script = document.createElement('script');
