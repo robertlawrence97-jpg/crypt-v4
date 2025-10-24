@@ -39,7 +39,7 @@ const initialCustomers = [
   { id: 'C1', name: 'Downtown Tap House', address: '123 Main St', city: 'Portland', state: 'OR', zip: '97201', phone: '555-0101', email: 'orders@downtowntap.com', kegsOut: 1, depositBalance: 50, creditLimit: 2000, currentBalance: 450, deliveryDay: 'Monday', route: 'Route A', notes: 'Prefer morning deliveries', status: 'Active' },
   { id: 'C2', name: 'Craft Beer Bar', address: '456 Oak Ave', city: 'Portland', state: 'OR', zip: '97202', phone: '555-0102', email: 'manager@craftbeerbar.com', kegsOut: 1, depositBalance: 30, creditLimit: 1500, currentBalance: 320, deliveryDay: 'Wednesday', route: 'Route A', notes: 'VIP customer - priority service', status: 'Active' },
   { id: 'C3', name: 'Sports Bar & Grill', address: '789 Pine Rd', city: 'Portland', state: 'OR', zip: '97203', phone: '555-0103', email: 'purchasing@sportsbargrill.com', kegsOut: 1, depositBalance: 30, creditLimit: 3000, currentBalance: 890, deliveryDay: 'Friday', route: 'Route B', notes: 'High volume account', status: 'Active' },
-  { id: 'C4', name: 'Riverside Tavern', address: '321 River St', city: 'Portland', state: 'OR', zip: '97204', phone: '555-0104', email: 'info@riversidetavern.com', kegsOut: 0, depositBalance: 0, creditLimit: 1000, currentBalance: 125, deliveryDay: 'Tuesday', route: 'Route B', notes: 'Late payments - monitor closely', status: 'Warning' },
+  { id: 'C4', name: 'Riverside Tavern', address: '321 River St', city: 'Portland', state: 'OR', zip: '97204', phone: '555-0104', email: 'info@riversidetavern.com', kegsOut: 0, depositBalance: 0, creditLimit: 1000, currentBalance: 125, deliveryDay: 'Tuesday', route: 'Route B', notes: 'Late payments - monitor closely', status: 'Inactive' },
 ];
 
 const products = [
@@ -1874,7 +1874,7 @@ const App = () => {
                       <div>
                         <h3 className="text-xl font-bold">{c.name}</h3>
                         <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-1 ${
-                          c.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                          c.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                         }`}>
                           {c.status}
                         </span>
@@ -2468,7 +2468,6 @@ const App = () => {
                           <td className="text-center py-3 px-4">
                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                               c.status === 'Active' ? 'bg-green-100 text-green-700' :
-                              c.status === 'Warning' ? 'bg-yellow-100 text-yellow-700' :
                               'bg-red-100 text-red-700'
                             }`}>
                               {c.status}
@@ -3202,7 +3201,7 @@ const App = () => {
                   id="shipCustomer" 
                   className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
                 >
-                  {customers.map(c => (
+                  {customers.filter(c => c.status === 'Active').map(c => (
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
                 </select>
@@ -3962,8 +3961,7 @@ const App = () => {
                     className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
                   >
                     <option>Active</option>
-                    <option>Warning</option>
-                    <option>Suspended</option>
+                    <option>Inactive</option>
                   </select>
                 </div>
               </div>
