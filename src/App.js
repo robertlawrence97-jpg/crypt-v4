@@ -1072,7 +1072,7 @@ const App = () => {
                 id="rememberMe"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 text-blue-600 ${darkMode ? "border-gray-600" : "border-gray-300"} rounded focus:ring-blue-500"
+                className={`w-4 h-4 text-blue-600 ${darkMode ? "border-gray-600" : "border-gray-300"} rounded focus:ring-blue-500`}
               />
               <label htmlFor="rememberMe" className={`ml-2 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                 Remember me on this device
@@ -4645,7 +4645,7 @@ const App = () => {
                   <select
                     value={bulkOperationData.product || ''}
                     onChange={(e) => setBulkOperationData({...bulkOperationData, product: e.target.value})}
-                    className="w-full px-4 py-3 border ${darkMode ? "border-gray-600" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className={`w-full px-4 py-3 border ${darkMode ? "border-gray-600" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${darkMode ? "bg-gray-700 text-white" : "bg-white text-gray-900"}`}
                   >
                     <option value="">Select Product</option>
                     {products.filter(p => p.active).map(p => (
@@ -4663,7 +4663,7 @@ const App = () => {
                     placeholder="B2024-XXX"
                     value={bulkOperationData.batchNumber || ''}
                     onChange={(e) => setBulkOperationData({...bulkOperationData, batchNumber: e.target.value})}
-                    className="w-full px-4 py-3 border ${darkMode ? "border-gray-600" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className={`w-full px-4 py-3 border ${darkMode ? "border-gray-600" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${darkMode ? "bg-gray-700 text-white" : "bg-white text-gray-900"}`}
                   />
                 </div>
               </div>
@@ -4721,7 +4721,7 @@ const App = () => {
                   <select
                     value={bulkOperationData.customer || ''}
                     onChange={(e) => setBulkOperationData({...bulkOperationData, customer: e.target.value})}
-                    className="w-full px-4 py-3 border ${darkMode ? "border-gray-600" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className={`w-full px-4 py-3 border ${darkMode ? "border-gray-600" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${darkMode ? "bg-gray-700 text-white" : "bg-white text-gray-900"}`}
                   >
                     <option value="">Select Customer</option>
                     {customers.filter(c => c.status === 'Active').map(c => (
@@ -4788,7 +4788,7 @@ const App = () => {
                   <select
                     value={bulkOperationData.condition || 'Good'}
                     onChange={(e) => setBulkOperationData({...bulkOperationData, condition: e.target.value})}
-                    className="w-full px-4 py-3 border ${darkMode ? "border-gray-600" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                    className={`w-full px-4 py-3 border ${darkMode ? "border-gray-600" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent ${darkMode ? "bg-gray-700 text-white" : "bg-white text-gray-900"}`}
                   >
                     <option value="Good">Good</option>
                     <option value="Needs Cleaning">Needs Cleaning</option>
