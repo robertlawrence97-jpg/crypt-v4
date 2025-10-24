@@ -5,20 +5,27 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, addDoc, serverTimestamp, query, orderBy, deleteDoc, updateDoc } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth';
 
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
 // Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyAf3KJFgXz7i4UjryWQNGD2bH9uedTeYVY",
-  authDomain: "cryptkeeper-f695a.firebaseapp.com",
-  projectId: "cryptkeeper-f695a",
-  storageBucket: "cryptkeeper-f695a.firebasestorage.app",
-  messagingSenderId: "354790573765",
-  appId: "1:354790573765:web:365702abb10825b7d612ac"
+  apiKey: "AIzaSyDGp2nXMdztmpE9W4lG18XgOfWo4uVkzSk",
+  authDomain: "cryptkeeper-v2.firebaseapp.com",
+  projectId: "cryptkeeper-v2",
+  storageBucket: "cryptkeeper-v2.firebasestorage.app",
+  messagingSenderId: "134236363641",
+  appId: "1:134236363641:web:7311bf5b68dc93dcc8eda8",
+  measurementId: "G-DKQQPC7WFX"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+const analytics = getAnalytics(app);
 
 
 // Enhanced initial data with more realistic brewery operations
