@@ -1041,7 +1041,7 @@ const App = () => {
                 className={`w-full px-4 py-3 rounded-lg border ${
                   darkMode 
                     ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                    : 'bg-white border-gray-300 text-gray-900'
+                    : 'bg-white ${darkMode ? "border-gray-600" : "border-gray-300"} text-gray-900'
                 } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 placeholder="Enter your email"
                 required
@@ -1059,7 +1059,7 @@ const App = () => {
                 className={`w-full px-4 py-3 rounded-lg border ${
                   darkMode 
                     ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                    : 'bg-white border-gray-300 text-gray-900'
+                    : 'bg-white ${darkMode ? "border-gray-600" : "border-gray-300"} text-gray-900'
                 } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 placeholder="Enter your password"
                 required
@@ -1072,7 +1072,7 @@ const App = () => {
                 id="rememberMe"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                className="w-4 h-4 text-blue-600 ${darkMode ? "border-gray-600" : "border-gray-300"} rounded focus:ring-blue-500"
               />
               <label htmlFor="rememberMe" className={`ml-2 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                 Remember me on this device
@@ -1179,29 +1179,29 @@ const App = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <div className="flex justify-between items-start mb-2">
-                  <Package className="text-gray-600" size={28} />
+                  <Package className={`${darkMode ? "text-gray-300" : "text-gray-600"}`} size={28} />
                   <TrendingUp className="text-green-500" size={20} />
                 </div>
                 <p className="text-3xl font-bold">{stats.total}</p>
-                <p className="text-sm text-gray-600">Total Kegs</p>
+                <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Total Kegs</p>
               </div>
               
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <Truck className="text-green-600 mb-2" size={28} />
                 <p className="text-3xl font-bold text-green-600">{stats.atCustomers}</p>
-                <p className="text-sm text-gray-600">At Customers</p>
+                <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>At Customers</p>
               </div>
               
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <Package className="text-blue-600 mb-2" size={28} />
                 <p className="text-3xl font-bold text-blue-600">{stats.filled}</p>
-                <p className="text-sm text-gray-600">Filled & Ready</p>
+                <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Filled & Ready</p>
               </div>
               
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <AlertCircle className="text-red-600 mb-2" size={28} />
                 <p className="text-3xl font-bold text-red-600">{stats.overdue}</p>
-                <p className="text-sm text-gray-600">Overdue</p>
+                <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Overdue</p>
               </div>
             </div>
 
@@ -1306,15 +1306,15 @@ const App = () => {
                     <p className="text-gray-500 text-center py-8">No recent activity</p>
                   ) : (
                     activityLog.slice(0, 10).map(activity => (
-                      <div key={activity.id} className="flex gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                      <div key={activity.id} className={`flex gap-3 p-3 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg hover:bg-gray-100 transition-colors`}>
                         <div className="flex-shrink-0">
                           <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                             <Activity size={18} className="text-blue-600" />
                           </div>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900">{activity.action}</p>
-                          <p className="text-xs text-gray-600">{activity.details}</p>
+                          <p className={`text-sm font-medium ${darkMode ? "text-white" : "text-gray-900"}`}>{activity.action}</p>
+                          <p className={`text-xs ${darkMode ? "text-gray-300" : "text-gray-600"}`}>{activity.details}</p>
                           <p className="text-xs text-gray-400 mt-1">
                             {new Date(activity.timestamp).toLocaleString()}
                           </p>
@@ -1348,7 +1348,7 @@ const App = () => {
                           <span className="text-white text-xs font-bold">{item.count}</span>
                         </div>
                       </div>
-                      <div className="w-12 text-sm text-gray-600 text-right">
+                      <div className={`w-12 text-sm ${darkMode ? "text-gray-300" : "text-gray-600"} text-right`}>
                         {Math.round(item.count / stats.total * 100)}%
                       </div>
                     </div>
@@ -1378,7 +1378,7 @@ const App = () => {
                             <span className="text-white text-xs font-bold">{count}</span>
                           </div>
                         </div>
-                        <div className="w-12 text-sm text-gray-600 text-right">
+                        <div className={`w-12 text-sm ${darkMode ? "text-gray-300" : "text-gray-600"} text-right`}>
                           {Math.round(count / stats.filled * 100)}%
                         </div>
                       </div>
@@ -1392,7 +1392,7 @@ const App = () => {
         {view === 'inventory' && (
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-              <h2 className="text-2xl font-bold">Keg Inventory</h2>
+              <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Keg Inventory</h2>
               <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                 <input
                   type="text"
@@ -1453,7 +1453,7 @@ const App = () => {
                 </h3>
                 <div className="grid md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold mb-2">Status (Multi-select)</label>
+                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Status (Multi-select)</label>
                     <div className="space-y-2 max-h-40 overflow-y-auto p-2 border rounded">
                       {['At Customer', 'Filled', 'Empty', 'In Transit', 'Maintenance', 'Lost'].map(status => (
                         <label key={status} className="flex items-center gap-2">
@@ -1476,7 +1476,7 @@ const App = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-semibold mb-2">Keg Size</label>
+                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Keg Size</label>
                     <div className="space-y-2">
                       {['15.5 gal', '7.75 gal', '5.16 gal'].map(size => (
                         <label key={size} className="flex items-center gap-2">
@@ -1499,27 +1499,27 @@ const App = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-semibold mb-2">Days Out Range</label>
+                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Days Out Range</label>
                     <div className="flex gap-2">
                       <input
                         type="number"
                         placeholder="Min"
                         value={advancedFilters.daysOutMin}
                         onChange={(e) => setAdvancedFilters({...advancedFilters, daysOutMin: e.target.value})}
-                        className="w-full px-3 py-2 border rounded-lg"
+                        className={`w-full px-3 py-2 border rounded-lg ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}"
                       />
                       <input
                         type="number"
                         placeholder="Max"
                         value={advancedFilters.daysOutMax}
                         onChange={(e) => setAdvancedFilters({...advancedFilters, daysOutMax: e.target.value})}
-                        className="w-full px-3 py-2 border rounded-lg"
+                        className={`w-full px-3 py-2 border rounded-lg ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}"
                       />
                     </div>
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-semibold mb-2">Condition</label>
+                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Condition</label>
                     <div className="space-y-2">
                       {['Good', 'Needs Cleaning', 'Damaged'].map(condition => (
                         <label key={condition} className="flex items-center gap-2">
@@ -1542,19 +1542,19 @@ const App = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-semibold mb-2">Fill Date Range</label>
+                    <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Fill Date Range</label>
                     <div className="space-y-2">
                       <input
                         type="date"
                         value={advancedFilters.dateRange.start}
                         onChange={(e) => setAdvancedFilters({...advancedFilters, dateRange: {...advancedFilters.dateRange, start: e.target.value}})}
-                        className="w-full px-3 py-2 border rounded-lg"
+                        className={`w-full px-3 py-2 border rounded-lg ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}"
                       />
                       <input
                         type="date"
                         value={advancedFilters.dateRange.end}
                         onChange={(e) => setAdvancedFilters({...advancedFilters, dateRange: {...advancedFilters.dateRange, end: e.target.value}})}
-                        className="w-full px-3 py-2 border rounded-lg"
+                        className={`w-full px-3 py-2 border rounded-lg ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}"
                       />
                     </div>
                   </div>
@@ -1567,7 +1567,7 @@ const App = () => {
                       customers: [], products: [], locations: [], sizes: [],
                       daysOutMin: '', daysOutMax: '', conditions: []
                     })}
-                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
+                    className={`px-4 py-2 bg-gray-200 ${darkMode ? "text-white" : "text-gray-800"} rounded-lg hover:bg-gray-300`}
                   >
                     Clear All Filters
                   </button>
@@ -1586,7 +1586,7 @@ const App = () => {
                   <p className="font-bold text-purple-800">{selectedItems.length} items selected</p>
                   <button 
                     onClick={() => setSelectedItems([])}
-                    className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+                    className={`px-4 py-2 bg-gray-300 ${darkMode ? "text-white" : "text-gray-800"} rounded-lg hover:bg-gray-400`}
                   >
                     Clear Selection
                   </button>
@@ -1658,7 +1658,7 @@ const App = () => {
                   <p className="font-bold text-blue-800">{selectedKegs.length} kegs selected</p>
                   <button 
                     onClick={() => { setSelectedKegs([]); setBatchMode(false); }}
-                    className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+                    className={`px-4 py-2 bg-gray-300 ${darkMode ? "text-white" : "text-gray-800"} rounded-lg hover:bg-gray-400`}
                   >
                     Cancel Selection
                   </button>
@@ -1751,7 +1751,7 @@ const App = () => {
                       )}
                       <div>
                         <p className="font-bold text-lg">{k.id}</p>
-                        <p className="text-sm text-gray-600">{k.product || 'Empty'}</p>
+                        <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>{k.product || 'Empty'}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -1803,21 +1803,21 @@ const App = () => {
                   </div>
                   
                   <div className="space-y-2 text-sm mb-3">
-                    <p className="text-gray-600">📍 {k.location}</p>
-                    <p className="text-gray-600">📏 {k.size}</p>
-                    <p className="text-gray-600">
+                    <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>📍 {k.location}</p>
+                    <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>📏 {k.size}</p>
+                    <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>
                       <QrCode size={14} className="inline mr-1" />
                       {k.barcode || 'No barcode'}
                     </p>
                     {k.customer && (
-                      <p className="text-gray-600">👤 {customers.find(c => c.id === k.customer)?.name || 'Unknown'}</p>
+                      <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>👤 {customers.find(c => c.id === k.customer)?.name || 'Unknown'}</p>
                     )}
                     {k.daysOut > 0 && (
                       <p className={`font-semibold ${k.daysOut > 30 ? 'text-red-600' : 'text-orange-600'}`}>
                         ⏱️ {k.daysOut} days out {k.daysOut > 30 && '(OVERDUE)'}
                       </p>
                     )}
-                    <p className="text-gray-600">🔄 {k.turnsThisYear} turns this year</p>
+                    <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>🔄 {k.turnsThisYear} turns this year</p>
                     {k.condition !== 'Good' && (
                       <p className="text-orange-600 font-semibold">⚠️ {k.condition}</p>
                     )}
@@ -1853,7 +1853,7 @@ const App = () => {
         {view === 'customers' && (
           <div className="space-y-4">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">Customer Management</h2>
+              <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Customer Management</h2>
               <div className="flex gap-2">
                 <button onClick={() => { setEditingItem(null); setModal('addCustomer'); }} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
                   <Plus size={20} />
@@ -1872,7 +1872,7 @@ const App = () => {
                   <div>
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <h3 className="text-xl font-bold">{c.name}</h3>
+                        <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>{c.name}</h3>
                         <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-1 ${
                           c.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                         }`}>
@@ -1903,10 +1903,10 @@ const App = () => {
                     </div>
                     
                     <div className="space-y-2 text-sm">
-                      <p className="text-gray-600">📍 {c.address}, {c.city}, {c.state} {c.zip}</p>
-                      <p className="text-gray-600">📞 {c.phone}</p>
-                      <p className="text-gray-600">📧 {c.email}</p>
-                      <p className="text-gray-600">🚚 Delivery: {c.deliveryDay} ({c.route})</p>
+                      <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>📍 {c.address}, {c.city}, {c.state} {c.zip}</p>
+                      <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>📞 {c.phone}</p>
+                      <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>📧 {c.email}</p>
+                      <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>🚚 Delivery: {c.deliveryDay} ({c.route})</p>
                       {c.notes && <p className="text-orange-600">💬 {c.notes}</p>}
                     </div>
                   </div>
@@ -1914,16 +1914,16 @@ const App = () => {
                   <div className="grid grid-cols-1 gap-4">
                     <div className="bg-blue-50 p-4 rounded-lg text-center">
                       <p className="text-3xl font-bold text-blue-600">{c.kegsOut}</p>
-                      <p className="text-sm text-gray-600">Kegs Out</p>
+                      <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Kegs Out</p>
                     </div>
                     {/* Hidden: Deposits and Balance Due */}
                     {/* <div className="bg-green-50 p-4 rounded-lg text-center">
                       <p className="text-3xl font-bold text-green-600">${c.depositBalance}</p>
-                      <p className="text-sm text-gray-600">Deposits</p>
+                      <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Deposits</p>
                     </div>
                     <div className="bg-purple-50 p-4 rounded-lg text-center">
                       <p className="text-3xl font-bold text-purple-600">${c.currentBalance}</p>
-                      <p className="text-sm text-gray-600">Balance Due</p>
+                      <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Balance Due</p>
                     </div> */}
                   </div>
                 </div>
@@ -1933,9 +1933,9 @@ const App = () => {
                   <h4 className="font-bold mb-2">Kegs Currently Out:</h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {kegs.filter(k => k.customer === c.id).map(k => (
-                      <div key={k.id} className="p-2 bg-gray-50 rounded border text-sm">
+                      <div key={k.id} className={`p-2 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded border text-sm`}>
                         <p className="font-bold">{k.id}</p>
-                        <p className="text-xs text-gray-600">{k.product}</p>
+                        <p className={`text-xs ${darkMode ? "text-gray-300" : "text-gray-600"}`}>{k.product}</p>
                         <p className="text-xs text-gray-500">{k.daysOut} days</p>
                       </div>
                     ))}
@@ -1951,29 +1951,29 @@ const App = () => {
 
         {view === 'maintenance' && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Maintenance & Inspection</h2>
+            <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Maintenance & Inspection</h2>
             
             {/* Maintenance Stats */}
             <div className="grid md:grid-cols-4 gap-4">
               <div className="bg-yellow-50 border-2 border-yellow-500 p-4 rounded-lg">
                 <Wrench className="text-yellow-600 mb-2" size={28} />
                 <p className="text-2xl font-bold text-yellow-700">{kegs.filter(k => k.status === 'Maintenance').length}</p>
-                <p className="text-sm text-gray-700">In Maintenance</p>
+                <p className={`text-sm ${darkMode ? "text-gray-200" : "text-gray-700"}`}>In Maintenance</p>
               </div>
               <div className="bg-red-50 border-2 border-red-500 p-4 rounded-lg">
                 <AlertCircle className="text-red-600 mb-2" size={28} />
                 <p className="text-2xl font-bold text-red-700">{kegs.filter(k => k.condition === 'Needs Repair').length}</p>
-                <p className="text-sm text-gray-700">Needs Repair</p>
+                <p className={`text-sm ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Needs Repair</p>
               </div>
               <div className="bg-blue-50 border-2 border-blue-500 p-4 rounded-lg">
                 <Clock className="text-blue-600 mb-2" size={28} />
                 <p className="text-2xl font-bold text-blue-700">{kegs.filter(k => k.condition === 'Needs Cleaning').length}</p>
-                <p className="text-sm text-gray-700">Needs Cleaning</p>
+                <p className={`text-sm ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Needs Cleaning</p>
               </div>
               <div className="bg-green-50 border-2 border-green-500 p-4 rounded-lg">
                 <Check className="text-green-600 mb-2" size={28} />
                 <p className="text-2xl font-bold text-green-700">{kegs.filter(k => k.condition === 'Good').length}</p>
-                <p className="text-sm text-gray-700">Good Condition</p>
+                <p className={`text-sm ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Good Condition</p>
               </div>
             </div>
 
@@ -1986,7 +1986,7 @@ const App = () => {
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="font-bold text-lg">{k.id}</p>
-                        <p className="text-sm text-gray-600">{k.size} · Last cleaned: {k.lastCleaned}</p>
+                        <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>{k.size} · Last cleaned: {k.lastCleaned}</p>
                         <p className="text-sm text-orange-600 font-semibold mt-1">Status: {k.condition}</p>
                         {k.maintenanceNotes && (
                           <p className="text-sm text-red-600 mt-1">⚠️ {k.maintenanceNotes}</p>
@@ -2016,10 +2016,10 @@ const App = () => {
                   .sort((a, b) => new Date(b.lastCleaned) - new Date(a.lastCleaned))
                   .slice(0, 10)
                   .map(k => (
-                    <div key={k.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <div key={k.id} className={`flex justify-between items-center p-3 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg`}>
                       <div>
                         <p className="font-semibold">{k.id}</p>
-                        <p className="text-sm text-gray-600">Last cleaned: {k.lastCleaned}</p>
+                        <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Last cleaned: {k.lastCleaned}</p>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                         k.condition === 'Good' ? 'bg-green-100 text-green-700' :
@@ -2037,7 +2037,7 @@ const App = () => {
 
         {view === 'reports' && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Reports & Analytics</h2>
+            <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Reports & Analytics</h2>
             
             {/* Key Metrics */}
             <div className="grid md:grid-cols-3 gap-4">
@@ -2045,19 +2045,19 @@ const App = () => {
                 <h3 className="text-lg font-bold mb-4">Fleet Performance</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Total Kegs:</span>
+                    <span className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>Total Kegs:</span>
                     <span className="font-bold">{stats.total}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Utilization:</span>
+                    <span className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>Utilization:</span>
                     <span className="font-bold text-green-600">{stats.utilization}%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Avg Turns:</span>
+                    <span className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>Avg Turns:</span>
                     <span className="font-bold">{stats.avgTurns}/year</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Fleet Value:</span>
+                    <span className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>Fleet Value:</span>
                     <span className="font-bold">${stats.totalValue.toLocaleString()}</span>
                   </div>
                 </div>
@@ -2067,7 +2067,7 @@ const App = () => {
                 <h3 className="text-lg font-bold mb-4">Status Breakdown</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">At Customers:</span>
+                    <span className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>At Customers:</span>
                     <div className="flex items-center gap-2">
                       <div className="w-24 bg-gray-200 rounded-full h-2">
                         <div className="bg-green-600 h-2 rounded-full" style={{width: `${(stats.atCustomers / stats.total) * 100}%`}}></div>
@@ -2076,7 +2076,7 @@ const App = () => {
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Filled & Ready:</span>
+                    <span className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>Filled & Ready:</span>
                     <div className="flex items-center gap-2">
                       <div className="w-24 bg-gray-200 rounded-full h-2">
                         <div className="bg-blue-600 h-2 rounded-full" style={{width: `${(stats.filled / stats.total) * 100}%`}}></div>
@@ -2085,7 +2085,7 @@ const App = () => {
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Empty:</span>
+                    <span className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>Empty:</span>
                     <div className="flex items-center gap-2">
                       <div className="w-24 bg-gray-200 rounded-full h-2">
                         <div className="bg-gray-600 h-2 rounded-full" style={{width: `${(stats.empty / stats.total) * 100}%`}}></div>
@@ -2094,7 +2094,7 @@ const App = () => {
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Maintenance:</span>
+                    <span className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>Maintenance:</span>
                     <div className="flex items-center gap-2">
                       <div className="w-24 bg-gray-200 rounded-full h-2">
                         <div className="bg-yellow-600 h-2 rounded-full" style={{width: `${(stats.maintenance / stats.total) * 100}%`}}></div>
@@ -2109,19 +2109,19 @@ const App = () => {
                 <h3 className="text-lg font-bold mb-4">Financial Summary</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Deposits Held:</span>
+                    <span className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>Deposits Held:</span>
                     <span className="font-bold text-green-600">${stats.deposits}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Fleet Value:</span>
+                    <span className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>Fleet Value:</span>
                     <span className="font-bold">${stats.totalValue.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Lost Kegs:</span>
+                    <span className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>Lost Kegs:</span>
                     <span className="font-bold text-red-600">{stats.lost}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Lost Value:</span>
+                    <span className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>Lost Value:</span>
                     <span className="font-bold text-red-600">${stats.lost * 130}</span>
                   </div>
                 </div>
@@ -2135,10 +2135,10 @@ const App = () => {
                 {productList.map(p => {
                   const count = kegs.filter(k => k.product === p.name).length;
                   return (
-                    <div key={p.name} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div key={p.name} className={`flex items-center justify-between p-3 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg`}>
                       <div className="flex-1">
                         <p className="font-semibold">{p.name}</p>
-                        <p className="text-xs text-gray-600">{p.style} · {p.abv}% ABV</p>
+                        <p className={`text-xs ${darkMode ? "text-gray-300" : "text-gray-600"}`}>{p.style} · {p.abv}% ABV</p>
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="w-32 bg-gray-200 rounded-full h-3">
@@ -2160,14 +2160,14 @@ const App = () => {
                   .sort((a, b) => b.kegsOut - a.kegsOut)
                   .slice(0, 5)
                   .map(c => (
-                    <div key={c.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <div key={c.id} className={`flex justify-between items-center p-3 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg`}>
                       <div>
                         <p className="font-semibold">{c.name}</p>
-                        <p className="text-sm text-gray-600">{c.deliveryDay} delivery</p>
+                        <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>{c.deliveryDay} delivery</p>
                       </div>
                       <div className="text-right">
                         <p className="font-bold text-lg">{c.kegsOut}</p>
-                        <p className="text-xs text-gray-600">kegs out</p>
+                        <p className={`text-xs ${darkMode ? "text-gray-300" : "text-gray-600"}`}>kegs out</p>
                       </div>
                     </div>
                   ))}
@@ -2178,15 +2178,15 @@ const App = () => {
 
         {view === 'settings' && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Settings & Configuration</h2>
+            <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Settings & Configuration</h2>
             
             {/* User Management - Admin Only */}
             {currentUser.role === 'Admin' && (
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <div className="flex justify-between items-center mb-4">
                   <div>
-                    <h3 className="text-xl font-bold">User Management</h3>
-                    <p className="text-sm text-gray-600">Manage system users and permissions</p>
+                    <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>User Management</h3>
+                    <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Manage system users and permissions</p>
                   </div>
                   <button 
                     onClick={() => { setEditingItem(null); setModal('addUser'); }}
@@ -2198,10 +2198,10 @@ const App = () => {
                 </div>
                 <div className="space-y-2">
                   {users.map((u, idx) => (
-                    <div key={idx} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 gap-3">
+                    <div key={idx} className={`flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg hover:bg-gray-100 gap-3`}>
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold truncate">{u.name}</p>
-                        <p className="text-sm text-gray-600 truncate">{u.email}</p>
+                        <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"} truncate`}>{u.email}</p>
                         <p className="text-xs text-gray-500 mt-1">
                           Last login: {u.lastLogin} · Created: {u.createdDate}
                         </p>
@@ -2250,7 +2250,7 @@ const App = () => {
             {/* Products Management */}
             <div className="bg-white p-6 rounded-xl shadow-lg">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold">Products</h3>
+                <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Products</h3>
                 <button 
                   onClick={() => { setEditingItem(null); setModal('addProduct'); }}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
@@ -2261,10 +2261,10 @@ const App = () => {
               </div>
               <div className="space-y-2">
                 {productList.map((p, idx) => (
-                  <div key={idx} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 gap-3">
+                  <div key={idx} className={`flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg hover:bg-gray-100 gap-3`}>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold">{p.name}</p>
-                      <p className="text-sm text-gray-600">{p.style} · {p.abv}% ABV · {p.ibu} IBU</p>
+                      <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>{p.style} · {p.abv}% ABV · {p.ibu} IBU</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -2301,10 +2301,10 @@ const App = () => {
             <div className="bg-white p-6 rounded-xl shadow-lg">
               <h3 className="text-xl font-bold mb-4">System Settings</h3>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className={`flex items-center justify-between p-4 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg`}>
                   <div>
                     <p className="font-semibold">Theme</p>
-                    <p className="text-sm text-gray-600">Switch between light and dark mode</p>
+                    <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Switch between light and dark mode</p>
                   </div>
                   <button
                     onClick={() => setDarkMode(!darkMode)}
@@ -2314,10 +2314,10 @@ const App = () => {
                   </button>
                 </div>
                 
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className={`flex items-center justify-between p-4 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg`}>
                   <div>
                     <p className="font-semibold">Camera Permission</p>
-                    <p className="text-sm text-gray-600">Current status: {cameraPermission}</p>
+                    <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Current status: {cameraPermission}</p>
                   </div>
                   {cameraPermission === 'denied' && (
                     <button 
@@ -2333,10 +2333,10 @@ const App = () => {
                   )}
                 </div>
                 
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className={`flex items-center justify-between p-4 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg`}>
                   <div>
                     <p className="font-semibold">Default Overdue Threshold</p>
-                    <p className="text-sm text-gray-600">Kegs flagged as overdue after 30 days</p>
+                    <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Kegs flagged as overdue after 30 days</p>
                   </div>
                   <input 
                     type="number" 
@@ -2345,10 +2345,10 @@ const App = () => {
                   />
                 </div>
                 
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className={`flex items-center justify-between p-4 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg`}>
                   <div>
                     <p className="font-semibold">Password</p>
-                    <p className="text-sm text-gray-600">Change your login password</p>
+                    <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Change your login password</p>
                   </div>
                   <button className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800">
                     Change Password
@@ -2387,7 +2387,7 @@ const App = () => {
         {view === 'financial' && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Financial Dashboard</h2>
+              <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Financial Dashboard</h2>
               <button 
                 onClick={() => exportData('financial')} 
                 className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 flex items-center gap-2"
@@ -2450,7 +2450,7 @@ const App = () => {
                       const creditUtilization = (c.currentBalance / c.creditLimit * 100).toFixed(0);
                       
                       return (
-                        <tr key={c.id} className="border-b hover:bg-gray-50">
+                        <tr key={c.id} className={`border-b hover:${darkMode ? "bg-gray-700" : "bg-gray-50"}`}>
                           <td className="py-3 px-4 font-medium">{c.name}</td>
                           <td className="py-3 px-4">
                             <span className={`px-2 py-1 rounded ${c.kegsOut > 3 ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'}`}>
@@ -2459,7 +2459,7 @@ const App = () => {
                           </td>
                           <td className="text-right py-3 px-4 font-semibold text-green-600">${c.depositBalance}</td>
                           <td className="text-right py-3 px-4 font-semibold">${c.currentBalance}</td>
-                          <td className="text-right py-3 px-4 text-gray-600">${c.creditLimit}</td>
+                          <td className={`text-right py-3 px-4 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>${c.creditLimit}</td>
                           <td className="text-right py-3 px-4">
                             <span className={`font-semibold ${availableCredit < 500 ? 'text-red-600' : 'text-green-600'}`}>
                               ${availableCredit}
@@ -2505,12 +2505,12 @@ const App = () => {
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <h3 className="text-xl font-bold mb-4">Deposit Reconciliation</h3>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                    <span className="text-gray-700">Expected Deposits (Kegs Out)</span>
+                  <div className={`flex justify-between items-center p-3 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded`}>
+                    <span className={`${darkMode ? "text-gray-200" : "text-gray-700"}`}>Expected Deposits (Kegs Out)</span>
                     <span className="font-bold">${kegs.filter(k => k.customer).length * 30}</span>
                   </div>
-                  <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                    <span className="text-gray-700">Deposits on Account</span>
+                  <div className={`flex justify-between items-center p-3 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded`}>
+                    <span className={`${darkMode ? "text-gray-200" : "text-gray-700"}`}>Deposits on Account</span>
                     <span className="font-bold text-green-600">
                       ${customers.reduce((sum, c) => sum + c.depositBalance, 0)}
                     </span>
@@ -2548,8 +2548,8 @@ const App = () => {
         {view === 'archive' && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Archive</h2>
-              <div className="text-sm text-gray-600">
+              <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Archive</h2>
+              <div className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
                 {archivedKegs.length} kegs · {archivedCustomers.length} customers · {archivedProducts.length} products
               </div>
             </div>
@@ -2561,7 +2561,7 @@ const App = () => {
                   <Archive size={24} />
                   Archived Kegs
                 </h3>
-                <span className="text-sm text-gray-600">{archivedKegs.length} items</span>
+                <span className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>{archivedKegs.length} items</span>
               </div>
               
               {archivedKegs.length === 0 ? (
@@ -2569,10 +2569,10 @@ const App = () => {
               ) : (
                 <div className="space-y-2 max-h-96 overflow-y-auto">
                   {archivedKegs.map((keg, idx) => (
-                    <div key={idx} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                    <div key={idx} className={`flex justify-between items-center p-4 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg hover:bg-gray-100`}>
                       <div>
                         <p className="font-semibold">{keg.id}</p>
-                        <p className="text-sm text-gray-600">
+                        <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
                           {keg.product || 'Empty'} · {keg.size} · {keg.location}
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
@@ -2619,7 +2619,7 @@ const App = () => {
                   <Archive size={24} />
                   Archived Customers
                 </h3>
-                <span className="text-sm text-gray-600">{archivedCustomers.length} items</span>
+                <span className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>{archivedCustomers.length} items</span>
               </div>
               
               {archivedCustomers.length === 0 ? (
@@ -2627,10 +2627,10 @@ const App = () => {
               ) : (
                 <div className="space-y-2 max-h-96 overflow-y-auto">
                   {archivedCustomers.map((customer, idx) => (
-                    <div key={idx} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                    <div key={idx} className={`flex justify-between items-center p-4 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg hover:bg-gray-100`}>
                       <div>
                         <p className="font-semibold">{customer.name}</p>
-                        <p className="text-sm text-gray-600">
+                        <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
                           {customer.address}, {customer.city}, {customer.state} {customer.zip}
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
@@ -2677,7 +2677,7 @@ const App = () => {
                   <Archive size={24} />
                   Archived Products
                 </h3>
-                <span className="text-sm text-gray-600">{archivedProducts.length} items</span>
+                <span className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>{archivedProducts.length} items</span>
               </div>
               
               {archivedProducts.length === 0 ? (
@@ -2685,10 +2685,10 @@ const App = () => {
               ) : (
                 <div className="space-y-2 max-h-96 overflow-y-auto">
                   {archivedProducts.map((product, idx) => (
-                    <div key={idx} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                    <div key={idx} className={`flex justify-between items-center p-4 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg hover:bg-gray-100`}>
                       <div>
                         <p className="font-semibold">{product.name}</p>
-                        <p className="text-sm text-gray-600">
+                        <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
                           {product.style} · {product.abv}% ABV · {product.ibu} IBU
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
@@ -2734,13 +2734,13 @@ const App = () => {
       {/* Camera Permission Modal */}
       {showPermissionModal && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[100] p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full relative">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-8 max-w-md w-full relative">
             <button 
               onClick={() => {
                 setShowPermissionModal(false);
                 setScan(false);
               }}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              className={`absolute top-4 right-4 text-gray-400 hover:${darkMode ? "text-gray-300" : "text-gray-600"}`}
             >
               <X size={28} />
             </button>
@@ -2750,7 +2750,7 @@ const App = () => {
                 <Camera size={40} className="text-blue-600" />
               </div>
               <h3 className="text-2xl font-bold mb-2">Camera Access Required</h3>
-              <p className="text-gray-600">
+              <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>
                 CryptKeeper Pro needs camera access to scan keg barcodes. 
                 Your camera will only be used for scanning and no data is stored.
               </p>
@@ -2784,7 +2784,7 @@ const App = () => {
                   localStorage.setItem('cameraPermission', 'denied');
                   setCameraPermission('denied');
                 }}
-                className="w-full px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-semibold"
+                className={`w-full px-6 py-3 bg-gray-200 ${darkMode ? "text-gray-200" : "text-gray-700"} rounded-lg hover:bg-gray-300 font-semibold`}
               >
                 Not Now
               </button>
@@ -2800,9 +2800,9 @@ const App = () => {
       {/* Scanner Modal */}
       {scan && (
         <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 p-4" style={{ display: showPermissionModal ? 'none' : 'flex' }}>
-          <div className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between mb-4">
-              <h3 className="text-2xl font-bold">Scan Barcode</h3>
+              <h3 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Scan Barcode</h3>
               <button onClick={() => { setScan(false); stopCam(); setBatchMode(false); setSelectedKegs([]); }}>
                 <X size={28} />
               </button>
@@ -2881,7 +2881,7 @@ const App = () => {
                   </p>
                 </div>
               ) : (
-                <p className="text-center mt-3 text-sm text-gray-600">
+                <p className={`text-center mt-3 text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
                   {cameraInitialized ? 'Camera active - Position barcode in red frame' : 'Activating camera...'}
                 </p>
               )}
@@ -2909,20 +2909,20 @@ const App = () => {
       {/* Transaction Management Modal */}
       {modal === 'trans' && sel && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Keg Management</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Keg Management</h3>
               <button onClick={() => setModal('')}>
                 <X size={24} />
               </button>
             </div>
             
-            <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+            <div className={`mb-4 p-4 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg`}>
               <p className="font-bold text-lg">{sel.id}</p>
-              <p className="text-sm text-gray-600">{sel.product || 'Empty'} - {sel.size}</p>
-              <p className="text-sm text-gray-600">📍 {sel.location}</p>
-              <p className="text-sm text-gray-600">Status: {sel.status}</p>
-              <p className="text-sm text-gray-600">Condition: {sel.condition}</p>
+              <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>{sel.product || 'Empty'} - {sel.size}</p>
+              <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>📍 {sel.location}</p>
+              <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Status: {sel.status}</p>
+              <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Condition: {sel.condition}</p>
               {sel.daysOut > 0 && (
                 <p className={`text-sm font-semibold mt-1 ${sel.daysOut > 30 ? 'text-red-600' : 'text-orange-600'}`}>
                   ⏱️ {sel.daysOut} days out
@@ -2987,18 +2987,18 @@ const App = () => {
       {/* Barcode Scan/Edit Modal */}
       {modal === 'editBarcode' && sel && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Scan/Edit Barcode</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Scan/Edit Barcode</h3>
               <button onClick={() => { setModal(''); setSel(null); }}>
                 <X size={24} />
               </button>
             </div>
             
-            <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+            <div className={`mb-4 p-4 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg`}>
               <p className="font-bold text-lg">{sel.id}</p>
-              <p className="text-sm text-gray-600">{sel.product || 'Empty'} - {sel.size}</p>
-              <p className="text-sm text-gray-600 mt-2">
+              <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>{sel.product || 'Empty'} - {sel.size}</p>
+              <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"} mt-2`}>
                 <span className="font-semibold">Current Barcode: </span>
                 {sel.barcode || 'Not set'}
               </p>
@@ -3006,13 +3006,13 @@ const App = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold mb-2">Barcode ID</label>
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Barcode ID</label>
                 <input
                   id="barcodeInput"
                   type="text"
                   defaultValue={sel.barcode}
                   placeholder="Enter or scan barcode..."
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                   autoFocus
                 />
                 <p className="text-xs text-gray-500 mt-1">
@@ -3034,7 +3034,7 @@ const App = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => { setModal(''); setSel(null); }}
-                  className="flex-1 px-4 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-semibold"
+                  className={`flex-1 px-4 py-3 bg-gray-200 ${darkMode ? "text-white" : "text-gray-800"} rounded-lg hover:bg-gray-300 font-semibold`}
                 >
                   Cancel
                 </button>
@@ -3077,17 +3077,17 @@ const App = () => {
       {/* Camera Barcode Scanner Modal */}
       {modal === 'scanBarcode' && sel && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-2xl w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-2xl w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Scan Barcode with Camera</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Scan Barcode with Camera</h3>
               <button onClick={() => { setModal('editBarcode'); stopCam(); }}>
                 <X size={24} />
               </button>
             </div>
             
-            <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+            <div className={`mb-4 p-4 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg`}>
               <p className="font-bold">Scanning barcode for: {sel.id}</p>
-              <p className="text-sm text-gray-600">Position the barcode within the camera view</p>
+              <p className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Position the barcode within the camera view</p>
             </div>
 
             <div className="relative bg-black rounded-lg overflow-hidden" style={{ height: '400px' }}>
@@ -3110,7 +3110,7 @@ const App = () => {
             <div className="mt-4 flex gap-3">
               <button
                 onClick={() => { setModal('editBarcode'); stopCam(); }}
-                className="flex-1 px-4 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-semibold"
+                className={`flex-1 px-4 py-3 bg-gray-200 ${darkMode ? "text-white" : "text-gray-800"} rounded-lg hover:bg-gray-300 font-semibold`}
               >
                 Cancel
               </button>
@@ -3137,9 +3137,9 @@ const App = () => {
       {/* Fill Form Modal */}
       {modal === 'fillForm' && sel && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Fill Keg</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Fill Keg</h3>
               <button onClick={() => setModal('trans')}>
                 <X size={24} />
               </button>
@@ -3147,10 +3147,10 @@ const App = () => {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold mb-2">Product</label>
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Product</label>
                 <select 
                   id="fillProduct" 
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                 >
                   {productList.filter(p => p.active).map(p => (
                     <option key={p.name} value={p.name}>{p.name} ({p.abv}% ABV)</option>
@@ -3159,12 +3159,12 @@ const App = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-semibold mb-2">Batch Number</label>
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Batch Number</label>
                 <input 
                   id="batchNumber"
                   type="text" 
                   placeholder="B2024-XXX" 
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                 />
               </div>
               
@@ -3186,9 +3186,9 @@ const App = () => {
       {/* Ship Form Modal */}
       {modal === 'shipForm' && sel && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Ship to Customer</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Ship to Customer</h3>
               <button onClick={() => setModal('trans')}>
                 <X size={24} />
               </button>
@@ -3196,10 +3196,10 @@ const App = () => {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold mb-2">Customer</label>
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Customer</label>
                 <select 
                   id="shipCustomer" 
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                 >
                   {customers.filter(c => c.status === 'Active').map(c => (
                     <option key={c.id} value={c.id}>{c.name}</option>
@@ -3224,9 +3224,9 @@ const App = () => {
       {/* Return Form Modal */}
       {modal === 'returnForm' && sel && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Process Return</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Process Return</h3>
               <button onClick={() => setModal('trans')}>
                 <X size={24} />
               </button>
@@ -3234,10 +3234,10 @@ const App = () => {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold mb-2">Condition</label>
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Condition</label>
                 <select 
                   id="returnCondition" 
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                 >
                   <option value="Good">Good</option>
                   <option value="Needs Cleaning">Needs Cleaning</option>
@@ -3263,9 +3263,9 @@ const App = () => {
       {/* Maintenance Form Modal */}
       {modal === 'maintenanceForm' && sel && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Maintenance Details</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Maintenance Details</h3>
               <button onClick={() => setModal('trans')}>
                 <X size={24} />
               </button>
@@ -3273,11 +3273,11 @@ const App = () => {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold mb-2">Issue Description</label>
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Issue Description</label>
                 <textarea 
                   id="maintenanceNotes"
                   placeholder="Describe the issue..." 
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                   rows="4"
                 ></textarea>
               </div>
@@ -3299,9 +3299,9 @@ const App = () => {
       {/* Batch Fill Modal */}
       {modal === 'batchFill' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Batch Fill ({selectedKegs.length} kegs)</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Batch Fill ({selectedKegs.length} kegs)</h3>
               <button onClick={() => setModal('')}>
                 <X size={24} />
               </button>
@@ -3309,10 +3309,10 @@ const App = () => {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold mb-2">Product</label>
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Product</label>
                 <select 
                   id="batchFillProduct" 
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                 >
                   {productList.filter(p => p.active).map(p => (
                     <option key={p.name} value={p.name}>{p.name} ({p.abv}% ABV)</option>
@@ -3321,12 +3321,12 @@ const App = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-semibold mb-2">Batch Number</label>
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Batch Number</label>
                 <input 
                   id="batchFillBatchNumber"
                   type="text" 
                   placeholder="B2024-XXX" 
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                 />
               </div>
               
@@ -3348,9 +3348,9 @@ const App = () => {
       {/* Batch Ship Modal */}
       {modal === 'batchShip' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Batch Ship ({selectedKegs.length} kegs)</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Batch Ship ({selectedKegs.length} kegs)</h3>
               <button onClick={() => setModal('')}>
                 <X size={24} />
               </button>
@@ -3358,10 +3358,10 @@ const App = () => {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold mb-2">Customer</label>
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Customer</label>
                 <select 
                   id="batchShipCustomer" 
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                 >
                   {customers.map(c => (
                     <option key={c.id} value={c.id}>{c.name}</option>
@@ -3386,9 +3386,9 @@ const App = () => {
       {/* Batch Return Modal */}
       {modal === 'batchReturn' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Batch Return ({selectedKegs.length} kegs)</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Batch Return ({selectedKegs.length} kegs)</h3>
               <button onClick={() => setModal('')}>
                 <X size={24} />
               </button>
@@ -3396,10 +3396,10 @@ const App = () => {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold mb-2">Condition</label>
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Condition</label>
                 <select 
                   id="batchReturnCondition" 
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                 >
                   <option value="Good">Good</option>
                   <option value="Needs Cleaning">Needs Cleaning</option>
@@ -3424,9 +3424,9 @@ const App = () => {
       {/* Batch Clean Modal */}
       {modal === 'batchClean' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Batch Clean & Inspect ({selectedKegs.length} kegs)</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Batch Clean & Inspect ({selectedKegs.length} kegs)</h3>
               <button onClick={() => setModal('')}>
                 <X size={24} />
               </button>
@@ -3457,9 +3457,9 @@ const App = () => {
       {/* Batch Repair Modal */}
       {modal === 'batchRepair' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Batch Repair Complete ({selectedKegs.length} kegs)</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Batch Repair Complete ({selectedKegs.length} kegs)</h3>
               <button onClick={() => setModal('')}>
                 <X size={24} />
               </button>
@@ -3490,9 +3490,9 @@ const App = () => {
       {/* Batch Maintenance Modal */}
       {modal === 'batchMaintenance' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold">Batch Flag for Maintenance ({selectedKegs.length} kegs)</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Batch Flag for Maintenance ({selectedKegs.length} kegs)</h3>
               <button onClick={() => setModal('')}>
                 <X size={24} />
               </button>
@@ -3500,11 +3500,11 @@ const App = () => {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold mb-2">Issue Description</label>
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Issue Description</label>
                 <textarea 
                   id="batchMaintenanceNotes"
                   placeholder="Describe the issue affecting these kegs..." 
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                   rows="4"
                 ></textarea>
               </div>
@@ -3526,9 +3526,9 @@ const App = () => {
       {/* Add/Edit Product Modal */}
       {(modal === 'addProduct' || modal === 'editProduct') && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full my-auto">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full my-auto">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">{modal === 'addProduct' ? 'Add New Product' : 'Edit Product'}</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>{modal === 'addProduct' ? 'Add New Product' : 'Edit Product'}</h3>
               <button 
                 onClick={() => {
                   setModal('');
@@ -3542,49 +3542,49 @@ const App = () => {
             
             <div className="space-y-4" key={editingItem?.data?.name || 'new'}>
               <div>
-                <label className="block text-sm font-semibold mb-2">Product Name</label>
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Product Name</label>
                 <input 
                   id="productName"
                   type="text" 
                   defaultValue={editingItem?.data?.name || ''}
                   placeholder="e.g., Hazy IPA" 
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                 />
               </div>
               
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-semibold mb-2">ABV (%)</label>
+                  <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>ABV (%)</label>
                   <input 
                     id="productABV"
                     type="number" 
                     step="0.1"
                     defaultValue={editingItem?.data?.abv || ''}
                     placeholder="6.5" 
-                    className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                    className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-semibold mb-2">IBU</label>
+                  <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>IBU</label>
                   <input 
                     id="productIBU"
                     type="number" 
                     defaultValue={editingItem?.data?.ibu || ''}
                     placeholder="45" 
-                    className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                    className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                   />
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-semibold mb-2">Style</label>
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Style</label>
                 <input 
                   id="productStyle"
                   type="text" 
                   defaultValue={editingItem?.data?.style || ''}
                   placeholder="IPA, Lager, Stout..." 
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                 />
               </div>
               
@@ -3604,7 +3604,7 @@ const App = () => {
                     setModal('');
                     setEditingItem(null);
                   }}
-                  className="flex-1 px-4 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-semibold"
+                  className={`flex-1 px-4 py-3 bg-gray-200 ${darkMode ? "text-white" : "text-gray-800"} rounded-lg hover:bg-gray-300 font-semibold`}
                 >
                   Cancel
                 </button>
@@ -3655,9 +3655,9 @@ const App = () => {
       {/* Add/Edit User Modal - Admin Only */}
       {(modal === 'addUser' || modal === 'editUser') && currentUser.role === 'Admin' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full my-auto">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full my-auto">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">{modal === 'addUser' ? 'Add New User' : 'Edit User'}</h3>
+              <h3 className={`text-xl font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>{modal === 'addUser' ? 'Add New User' : 'Edit User'}</h3>
               <button 
                 onClick={() => {
                   setModal('');
@@ -3671,33 +3671,33 @@ const App = () => {
             
             <div className="space-y-4" key={editingItem?.data?.id || 'new'}>
               <div>
-                <label className="block text-sm font-semibold mb-2">Full Name *</label>
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Full Name *</label>
                 <input 
                   id="userName"
                   type="text" 
                   defaultValue={editingItem?.data?.name || ''}
                   placeholder="e.g., John Smith" 
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-semibold mb-2">Email Address *</label>
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Email Address *</label>
                 <input 
                   id="userEmail"
                   type="email" 
                   defaultValue={editingItem?.data?.email || ''}
                   placeholder="user@cryptkeeper.com" 
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-semibold mb-2">Role *</label>
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Role *</label>
                 <select
                   id="userRole"
                   defaultValue={editingItem?.data?.role || 'Staff'}
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                 >
                   <option value="Admin">Admin - Full system access</option>
                   <option value="Manager">Manager - Can manage kegs and customers</option>
@@ -3706,11 +3706,11 @@ const App = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-semibold mb-2">Status *</label>
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Status *</label>
                 <select
                   id="userStatus"
                   defaultValue={editingItem?.data?.status || 'Active'}
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                 >
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
@@ -3718,14 +3718,14 @@ const App = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-semibold mb-2">
+                <label className={`block text-sm font-semibold mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>
                   {modal === 'addUser' ? 'Initial Password *' : 'New Password'}
                 </label>
                 <input 
                   id="userPassword"
                   type="password" 
                   placeholder={modal === 'addUser' ? 'Enter initial password' : 'Leave blank to keep current password'} 
-                  className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   {modal === 'addUser' 
@@ -3740,7 +3740,7 @@ const App = () => {
                     setModal('');
                     setEditingItem(null);
                   }}
-                  className="flex-1 px-4 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-semibold"
+                  className={`flex-1 px-4 py-3 bg-gray-200 ${darkMode ? "text-white" : "text-gray-800"} rounded-lg hover:bg-gray-300 font-semibold`}
                 >
                   Cancel
                 </button>
@@ -3838,16 +3838,16 @@ const App = () => {
       {/* Add/Edit Customer Modal */}
       {(modal === 'addCustomer' || modal === 'editCustomer') && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-xl h-[50vh] flex flex-col shadow-2xl">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl w-full max-w-xl h-[50vh] flex flex-col shadow-2xl">
             {/* Fixed Header */}
             <div className="flex-shrink-0 flex justify-between items-center px-5 py-3 border-b bg-white rounded-t-2xl">
-              <h3 className="text-lg font-bold">{modal === 'addCustomer' ? 'Add New Customer' : 'Edit Customer'}</h3>
+              <h3 className={`text-lg font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>{modal === 'addCustomer' ? 'Add New Customer' : 'Edit Customer'}</h3>
               <button 
                 onClick={() => {
                   setModal('');
                   setEditingItem(null);
                 }}
-                className="text-gray-500 hover:text-gray-700"
+                className={`text-gray-500 hover:${darkMode ? "text-gray-200" : "text-gray-700"}`}
               >
                 <X size={20} />
               </button>
@@ -3857,93 +3857,93 @@ const App = () => {
             <div className="flex-1 overflow-y-auto px-5 py-3" style={{ overflowY: 'scroll' }} key={editingItem?.data?.id || 'new'}>
               <div className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold mb-1">Customer Name *</label>
+                <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Customer Name *</label>
                 <input 
                   id="customerName"
                   type="text" 
                   defaultValue={editingItem?.data?.name || ''}
                   placeholder="e.g., Downtown Tap House" 
-                  className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                  className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                 />
               </div>
               
               <div>
-                <label className="block text-xs font-semibold mb-1">Address *</label>
+                <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Address *</label>
                 <input 
                   id="customerAddress"
                   type="text" 
                   defaultValue={editingItem?.data?.address || ''}
                   placeholder="123 Main St" 
-                  className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                  className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                 />
               </div>
               
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="block text-xs font-semibold mb-1">City *</label>
+                  <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>City *</label>
                   <input 
                     id="customerCity"
                     type="text" 
                     defaultValue={editingItem?.data?.city || ''}
                     placeholder="Portland" 
-                    className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                    className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-semibold mb-1">State *</label>
+                  <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>State *</label>
                   <input 
                     id="customerState"
                     type="text" 
                     defaultValue={editingItem?.data?.state || ''}
                     placeholder="OR" 
-                    className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                    className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-semibold mb-1">ZIP *</label>
+                  <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>ZIP *</label>
                   <input 
                     id="customerZip"
                     type="text" 
                     defaultValue={editingItem?.data?.zip || ''}
                     placeholder="97201" 
-                    className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                    className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                   />
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs font-semibold mb-1">Phone *</label>
+                  <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Phone *</label>
                   <input 
                     id="customerPhone"
                     type="tel" 
                     defaultValue={editingItem?.data?.phone || ''}
                     placeholder="555-0101" 
-                    className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                    className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-semibold mb-1">Email *</label>
+                  <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Email *</label>
                   <input 
                     id="customerEmail"
                     type="email" 
                     defaultValue={editingItem?.data?.email || ''}
                     placeholder="orders@customer.com" 
-                    className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                    className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                   />
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs font-semibold mb-1">Delivery Day</label>
+                  <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Delivery Day</label>
                   <select 
                     id="customerDeliveryDay"
                     defaultValue={editingItem?.data?.deliveryDay || 'Monday'}
-                    className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                    className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                   >
                     <option>Monday</option>
                     <option>Tuesday</option>
@@ -3954,11 +3954,11 @@ const App = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-semibold mb-1">Status</label>
+                  <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Status</label>
                   <select 
                     id="customerStatus"
                     defaultValue={editingItem?.data?.status || 'Active'}
-                    className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                    className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                   >
                     <option>Active</option>
                     <option>Inactive</option>
@@ -3967,12 +3967,12 @@ const App = () => {
               </div>
               
               <div>
-                <label className="block text-xs font-semibold mb-1">Notes</label>
+                <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Notes</label>
                 <textarea 
                   id="customerNotes"
                   defaultValue={editingItem?.data?.notes || ''}
                   placeholder="Additional notes..." 
-                  className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                  className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                   rows="2"
                 ></textarea>
               </div>
@@ -3980,14 +3980,14 @@ const App = () => {
             </div>
               
             {/* Fixed Footer with Buttons */}
-            <div className="flex-shrink-0 border-t px-5 py-3 bg-gray-50 rounded-b-2xl">
+            <div className={`flex-shrink-0 border-t px-5 py-3 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-b-2xl`}>
               <div className="flex gap-2">
                 <button 
                   onClick={() => {
                     setModal('');
                     setEditingItem(null);
                   }}
-                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-semibold text-sm"
+                  className={`flex-1 px-4 py-2 bg-gray-200 ${darkMode ? "text-white" : "text-gray-800"} rounded-lg hover:bg-gray-300 font-semibold text-sm`}
                 >
                   Cancel
                 </button>
@@ -4048,9 +4048,9 @@ const App = () => {
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 max-w-md w-full">
             <h3 className="text-xl font-bold mb-4 text-red-600">Are you sure?</h3>
-            <p className="text-gray-700 mb-6">
+            <p className={`${darkMode ? "text-gray-200" : "text-gray-700"} mb-6`}>
               {deleteConfirm.type === 'customer' 
                 ? `Delete customer "${deleteConfirm.item.name}"? This action cannot be undone.${deleteConfirm.item.kegsOut > 0 ? ` This will affect ${deleteConfirm.item.kegsOut} kegs currently out.` : ''}`
                 : deleteConfirm.type === 'keg'
@@ -4063,7 +4063,7 @@ const App = () => {
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteConfirm(null)}
-                className="flex-1 px-4 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-semibold"
+                className={`flex-1 px-4 py-3 bg-gray-200 ${darkMode ? "text-white" : "text-gray-800"} rounded-lg hover:bg-gray-300 font-semibold`}
               >
                 No, Cancel
               </button>
@@ -4129,11 +4129,11 @@ const App = () => {
       {/* Keg History Modal */}
       {showKegHistory && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md max-h-[70vh] flex flex-col shadow-2xl overflow-hidden">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl w-full max-w-md max-h-[70vh] flex flex-col shadow-2xl overflow-hidden">
             {/* Fixed Header */}
             <div className="flex-shrink-0 flex justify-between items-center px-5 py-3 border-b bg-white">
-              <h3 className="text-lg font-bold">Keg History: {showKegHistory}</h3>
-              <button onClick={() => setShowKegHistory(null)} className="text-gray-500 hover:text-gray-700">
+              <h3 className={`text-lg font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Keg History: {showKegHistory}</h3>
+              <button onClick={() => setShowKegHistory(null)} className={`text-gray-500 hover:${darkMode ? "text-gray-200" : "text-gray-700"}`}>
                 <X size={20} />
               </button>
             </div>
@@ -4156,7 +4156,7 @@ const App = () => {
                 return (
                   <div className="space-y-4">
                     {/* Current Status */}
-                    <div className="bg-gray-50 p-3 rounded-lg">
+                    <div className={`${darkMode ? "bg-gray-700" : "bg-gray-50"} p-3 rounded-lg`}>
                       <h4 className="font-bold mb-2 text-sm">Current Status</h4>
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div><span className="font-semibold">ID:</span> {keg.id}</div>
@@ -4180,7 +4180,7 @@ const App = () => {
                           history.map((item, idx) => {
                             const Icon = item.icon;
                             return (
-                              <div key={idx} className="flex gap-2 p-2 bg-gray-50 rounded-lg">
+                              <div key={idx} className={`flex gap-2 p-2 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg`}>
                                 <div className="flex-shrink-0">
                                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                                     <Icon size={16} className="text-blue-600" />
@@ -4188,7 +4188,7 @@ const App = () => {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="font-semibold text-sm">{item.action}</p>
-                                  <p className="text-xs text-gray-600 truncate">{item.details}</p>
+                                  <p className={`text-xs ${darkMode ? "text-gray-300" : "text-gray-600"} truncate`}>{item.details}</p>
                                   <p className="text-xs text-gray-400">{new Date(item.date).toLocaleDateString()}</p>
                                 </div>
                               </div>
@@ -4206,7 +4206,7 @@ const App = () => {
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="font-semibold text-sm">{activity.action}</p>
-                              <p className="text-xs text-gray-600 truncate">{activity.details}</p>
+                              <p className={`text-xs ${darkMode ? "text-gray-300" : "text-gray-600"} truncate`}>{activity.details}</p>
                               <p className="text-xs text-gray-400">
                                 {new Date(activity.timestamp).toLocaleString()}
                               </p>
@@ -4234,14 +4234,14 @@ const App = () => {
       {/* Add Keg Modal */}
       {modal === 'addKeg' && !scan && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-xl h-[50vh] flex flex-col shadow-2xl">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl w-full max-w-xl h-[50vh] flex flex-col shadow-2xl">
             {/* Fixed Header */}
             <div className="flex-shrink-0 flex justify-between items-center px-5 py-3 border-b bg-white rounded-t-2xl">
-              <h3 className="text-lg font-bold">Add New Keg</h3>
+              <h3 className={`text-lg font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Add New Keg</h3>
               <button onClick={() => { 
                 setModal(''); 
                 setScannedBarcodeForInventory('');
-              }} className="text-gray-500 hover:text-gray-700">
+              }} className={`text-gray-500 hover:${darkMode ? "text-gray-200" : "text-gray-700"}`}>
                 <X size={20} />
               </button>
             </div>
@@ -4251,17 +4251,17 @@ const App = () => {
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold mb-1">Keg ID *</label>
+                    <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Keg ID *</label>
                     <input
                       id="newKegId"
                       type="text"
                       placeholder="e.g., KEG011"
-                      className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                      className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold mb-1">Barcode *</label>
+                    <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Barcode *</label>
                     <div className="flex gap-2">
                       <input
                         id="newKegBarcode"
@@ -4285,10 +4285,10 @@ const App = () => {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold mb-1">Keg Size *</label>
+                    <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Keg Size *</label>
                     <select
                       id="newKegSize"
-                      className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                      className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                       defaultValue="15.5 gal"
                     >
                       <option value="15.5 gal">15.5 gal (Half Barrel)</option>
@@ -4298,10 +4298,10 @@ const App = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold mb-1">Owner *</label>
+                    <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Owner *</label>
                     <select
                       id="newKegOwner"
-                      className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                      className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                       defaultValue="Brewery"
                     >
                       <option value="Brewery">Brewery</option>
@@ -4313,34 +4313,34 @@ const App = () => {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold mb-1">Purchase Date *</label>
+                    <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Purchase Date *</label>
                     <input
                       id="newKegPurchaseDate"
                       type="date"
                       defaultValue={new Date().toISOString().split('T')[0]}
-                      className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                      className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold mb-1">Deposit</label>
+                    <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Deposit</label>
                     <input
                       id="newKegDeposit"
                       type="text"
                       value="$30"
                       disabled
-                      className="w-full px-3 py-2 border-2 rounded-lg bg-gray-100 text-gray-700 text-sm"
+                      className={`w-full px-3 py-2 border-2 rounded-lg bg-gray-100 ${darkMode ? "text-gray-200" : "text-gray-700"} text-sm`}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold mb-1">Notes (Optional)</label>
+                  <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Notes (Optional)</label>
                   <textarea
                     id="newKegNotes"
                     placeholder="Any notes..."
                     rows="2"
-                    className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                    className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                   />
                 </div>
 
@@ -4353,14 +4353,14 @@ const App = () => {
             </div>
 
             {/* Fixed Footer with Buttons */}
-            <div className="flex-shrink-0 border-t px-5 py-3 bg-gray-50 rounded-b-2xl">
+            <div className={`flex-shrink-0 border-t px-5 py-3 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-b-2xl`}>
               <div className="flex gap-2">
                 <button
                   onClick={() => {
                     setModal('');
                     setScannedBarcodeForInventory('');
                   }}
-                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-semibold text-sm"
+                  className={`flex-1 px-4 py-2 bg-gray-200 ${darkMode ? "text-white" : "text-gray-800"} rounded-lg hover:bg-gray-300 font-semibold text-sm`}
                 >
                   Cancel
                 </button>
@@ -4443,15 +4443,15 @@ const App = () => {
       {/* Edit Keg Modal */}
       {modal === 'editKeg' && editingItem && !scan && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-xl h-[50vh] flex flex-col shadow-2xl">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl w-full max-w-xl h-[50vh] flex flex-col shadow-2xl">
             {/* Fixed Header */}
             <div className="flex-shrink-0 flex justify-between items-center px-5 py-3 border-b bg-white rounded-t-2xl">
-              <h3 className="text-lg font-bold">Edit Keg</h3>
+              <h3 className={`text-lg font-bold ${darkMode ? "text-white" : "text-gray-900"}`}>Edit Keg</h3>
               <button onClick={() => { 
                 setModal(''); 
                 setEditingItem(null); 
                 setScannedBarcodeForInventory('');
-              }} className="text-gray-500 hover:text-gray-700">
+              }} className={`text-gray-500 hover:${darkMode ? "text-gray-200" : "text-gray-700"}`}>
                 <X size={20} />
               </button>
             </div>
@@ -4461,19 +4461,19 @@ const App = () => {
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold mb-1">Keg ID *</label>
+                    <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Keg ID *</label>
                     <input
                       id="editKegId"
                       type="text"
                       defaultValue={editingItem.data.id}
                       disabled
-                      className="w-full px-3 py-2 border-2 rounded-lg bg-gray-100 text-gray-600 text-sm"
+                      className={`w-full px-3 py-2 border-2 rounded-lg bg-gray-100 ${darkMode ? "text-gray-300" : "text-gray-600"} text-sm`}
                     />
                     <p className="text-xs text-gray-500 mt-1">ID cannot be changed</p>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold mb-1">Barcode *</label>
+                    <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Barcode *</label>
                     <div className="flex gap-2">
                       <input
                         id="editKegBarcode"
@@ -4497,10 +4497,10 @@ const App = () => {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold mb-1">Keg Size *</label>
+                    <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Keg Size *</label>
                     <select
                       id="editKegSize"
-                      className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                      className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                       defaultValue={editingItem.data.size}
                     >
                       <option value="15.5 gal">15.5 gal (Half Barrel)</option>
@@ -4510,10 +4510,10 @@ const App = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold mb-1">Owner *</label>
+                    <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Owner *</label>
                     <select
                       id="editKegOwner"
-                      className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                      className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                       defaultValue={editingItem.data.owner}
                     >
                       <option value="Brewery">Brewery</option>
@@ -4525,10 +4525,10 @@ const App = () => {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold mb-1">Condition</label>
+                    <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Condition</label>
                     <select
                       id="editKegCondition"
-                      className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                      className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                       defaultValue={editingItem.data.condition}
                     >
                       <option value="Good">Good</option>
@@ -4538,31 +4538,31 @@ const App = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold mb-1">Deposit</label>
+                    <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Deposit</label>
                     <input
                       id="editKegDeposit"
                       type="number"
                       defaultValue={editingItem.data.deposit}
-                      className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                      className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold mb-1">Maintenance Notes</label>
+                  <label className={`block text-xs font-semibold mb-1 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>Maintenance Notes</label>
                   <textarea
                     id="editKegNotes"
                     placeholder="Any notes..."
                     rows="2"
                     defaultValue={editingItem.data.maintenanceNotes}
-                    className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
+                    className={`w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"} text-sm"
                   />
                 </div>
               </div>
             </div>
 
             {/* Fixed Footer with Buttons */}
-            <div className="flex-shrink-0 border-t px-5 py-3 bg-gray-50 rounded-b-2xl">
+            <div className={`flex-shrink-0 border-t px-5 py-3 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-b-2xl`}>
               <div className="flex gap-2">
                 <button
                   onClick={() => { 
@@ -4570,7 +4570,7 @@ const App = () => {
                     setEditingItem(null); 
                     setScannedBarcodeForInventory('');
                   }}
-                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 font-semibold text-sm"
+                  className={`flex-1 px-4 py-2 bg-gray-200 ${darkMode ? "text-white" : "text-gray-800"} rounded-lg hover:bg-gray-300 font-semibold text-sm`}
                 >
                   Cancel
                 </button>
@@ -4630,22 +4630,22 @@ const App = () => {
       {/* Bulk Fill Modal */}
       {bulkOperationModal === 'fill' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl shadow-2xl max-w-md w-full">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Fill Kegs</h2>
-                <button onClick={() => setBulkOperationModal(null)} className="text-gray-500 hover:text-gray-700">
+                <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-800"}`}>Fill Kegs</h2>
+                <button onClick={() => setBulkOperationModal(null)} className={`text-gray-500 hover:${darkMode ? "text-gray-200" : "text-gray-700"}`}>
                   <X size={24} />
                 </button>
               </div>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Product</label>
+                  <label className={`block text-sm font-semibold ${darkMode ? "text-gray-200" : "text-gray-700"} mb-2`}>Product</label>
                   <select
                     value={bulkOperationData.product || ''}
                     onChange={(e) => setBulkOperationData({...bulkOperationData, product: e.target.value})}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border ${darkMode ? "border-gray-600" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">Select Product</option>
                     {products.filter(p => p.active).map(p => (
@@ -4657,13 +4657,13 @@ const App = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Batch Number</label>
+                  <label className={`block text-sm font-semibold ${darkMode ? "text-gray-200" : "text-gray-700"} mb-2`}>Batch Number</label>
                   <input
                     type="text"
                     placeholder="B2024-XXX"
                     value={bulkOperationData.batchNumber || ''}
                     onChange={(e) => setBulkOperationData({...bulkOperationData, batchNumber: e.target.value})}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border ${darkMode ? "border-gray-600" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -4706,22 +4706,22 @@ const App = () => {
       {/* Bulk Ship Modal */}
       {bulkOperationModal === 'ship' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl shadow-2xl max-w-md w-full">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Ship to Customer</h2>
-                <button onClick={() => setBulkOperationModal(null)} className="text-gray-500 hover:text-gray-700">
+                <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-800"}`}>Ship to Customer</h2>
+                <button onClick={() => setBulkOperationModal(null)} className={`text-gray-500 hover:${darkMode ? "text-gray-200" : "text-gray-700"}`}>
                   <X size={24} />
                 </button>
               </div>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Customer</label>
+                  <label className={`block text-sm font-semibold ${darkMode ? "text-gray-200" : "text-gray-700"} mb-2`}>Customer</label>
                   <select
                     value={bulkOperationData.customer || ''}
                     onChange={(e) => setBulkOperationData({...bulkOperationData, customer: e.target.value})}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border ${darkMode ? "border-gray-600" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   >
                     <option value="">Select Customer</option>
                     {customers.filter(c => c.status === 'Active').map(c => (
@@ -4773,22 +4773,22 @@ const App = () => {
       {/* Bulk Return Modal */}
       {bulkOperationModal === 'return' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl shadow-2xl max-w-md w-full">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Process Return</h2>
-                <button onClick={() => setBulkOperationModal(null)} className="text-gray-500 hover:text-gray-700">
+                <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-gray-800"}`}>Process Return</h2>
+                <button onClick={() => setBulkOperationModal(null)} className={`text-gray-500 hover:${darkMode ? "text-gray-200" : "text-gray-700"}`}>
                   <X size={24} />
                 </button>
               </div>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Condition</label>
+                  <label className={`block text-sm font-semibold ${darkMode ? "text-gray-200" : "text-gray-700"} mb-2`}>Condition</label>
                   <select
                     value={bulkOperationData.condition || 'Good'}
                     onChange={(e) => setBulkOperationData({...bulkOperationData, condition: e.target.value})}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border ${darkMode ? "border-gray-600" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                   >
                     <option value="Good">Good</option>
                     <option value="Needs Cleaning">Needs Cleaning</option>
@@ -4859,7 +4859,7 @@ const App = () => {
               </button>
               <button 
                 onClick={() => { exportData('inventory'); setQuickActionMenu(false); }}
-                className="flex items-center gap-3 px-4 py-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 w-full text-left font-semibold"
+                className={`flex items-center gap-3 px-4 py-3 ${darkMode ? "bg-gray-700" : "bg-gray-50"} text-gray-700 rounded-lg hover:bg-gray-100 w-full text-left font-semibold`}
               >
                 <Download size={20} />
                 <span>Export Data</span>
