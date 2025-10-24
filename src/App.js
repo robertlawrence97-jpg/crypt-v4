@@ -5,9 +5,6 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, addDoc, serverTimestamp, query, orderBy, deleteDoc, updateDoc } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth';
 
-// Leaflet CSS - must be imported before any map components
-import 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAf3KJFgXz7i4UjryWQNGD2bH9uedTeYVY",
@@ -42,7 +39,7 @@ const initialCustomers = [
   { id: 'C1', name: 'Downtown Tap House', address: '123 Main St', city: 'Portland', state: 'OR', zip: '97201', phone: '555-0101', email: 'orders@downtowntap.com', kegsOut: 1, depositBalance: 50, creditLimit: 2000, currentBalance: 450, deliveryDay: 'Monday', route: 'Route A', notes: 'Prefer morning deliveries', status: 'Active' },
   { id: 'C2', name: 'Craft Beer Bar', address: '456 Oak Ave', city: 'Portland', state: 'OR', zip: '97202', phone: '555-0102', email: 'manager@craftbeerbar.com', kegsOut: 1, depositBalance: 30, creditLimit: 1500, currentBalance: 320, deliveryDay: 'Wednesday', route: 'Route A', notes: 'VIP customer - priority service', status: 'Active' },
   { id: 'C3', name: 'Sports Bar & Grill', address: '789 Pine Rd', city: 'Portland', state: 'OR', zip: '97203', phone: '555-0103', email: 'purchasing@sportsbargrill.com', kegsOut: 1, depositBalance: 30, creditLimit: 3000, currentBalance: 890, deliveryDay: 'Friday', route: 'Route B', notes: 'High volume account', status: 'Active' },
-  { id: 'C4', name: 'Riverside Tavern', address: '321 River St', city: 'Portland', state: 'OR', zip: '97204', phone: '555-0104', email: 'info@riversidetavern.com', kegsOut: 0, depositBalance: 0, creditLimit: 1000, currentBalance: 125, deliveryDay: 'Tuesday', route: 'Route B', notes: 'Late payments - monitor closely', status: 'Warning' },
+  { id: 'C4', name: 'Riverside Tavern', address: '321 River St', city: 'Portland', state: 'OR', zip: '97204', phone: '555-0104', email: 'info@riversidetavern.com', kegsOut: 0, depositBalance: 0, creditLimit: 1000, currentBalance: 125, deliveryDay: 'Tuesday', route: 'Route B', notes: 'Late payments - monitor closely', status: 'Inactive' },
 ];
 
 const products = [
@@ -70,6 +67,100 @@ const CryptKeeperLogo = ({ className = "h-12 w-auto" }) => (
     className={className}
   />
 );
+
+// Customer Map Component
+const CustomerMap = ({ customers }) => {
+  const [mapLoaded, setMapLoaded] = React.useState(false);
+  const mapRef = React.useRef(null);
+  const mapInstanceRef = React.useRef(null);
+  
+  // Brewery location (Windsor, CT)
+  const breweryLat = 41.8268;
+  const breweryLng = -72.6686;
+  
+  // Get customers with kegs
+  const customersWithKegs = customers.filter(c => c.kegsOut > 0);
+  
+  React.useEffect(() => {
+    // Load Leaflet CSS
+    if (!document.getElementById('leaflet-css')) {
+      const link = document.createElement('link');
+      link.id = 'leaflet-css';
+      link.rel = 'stylesheet';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
+      link.crossOrigin = '';
+      document.head.appendChild(link);
+    }
+    
+    // Load Leaflet library
+    if (!window.L) {
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+      script.crossOrigin = '';
+      script.onload = () => setMapLoaded(true);
+      document.head.appendChild(script);
+    } else {
+      setMapLoaded(true);
+    }
+  }, []);
+  
+  React.useEffect(() => {
+    if (!mapLoaded || !mapRef.current || mapInstanceRef.current) return;
+    
+    // Create map centered on brewery
+    const map = window.L.map(mapRef.current).setView([breweryLat, breweryLng], 11);
+    mapInstanceRef.current = map;
+    
+    // Add OpenStreetMap tiles
+    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19
+    }).addTo(map);
+    
+    // Custom brewery icon (blue house)
+    const breweryIcon = window.L.divIcon({
+      html: '<div style="background: #2563eb; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🏠</div>',
+      iconSize: [32, 32],
+      iconAnchor: [16, 16],
+      className: 'custom-icon'
+    });
+    
+    // Add brewery marker
+    window.L.marker([breweryLat, breweryLng], { icon: breweryIcon })
+      .addTo(map)
+      .bindPopup('<strong>Dudleytown Brewing Co.</strong><br>Windsor, CT<br>🏭 Brewery Location');
+    
+    // Add customer markers
+    customersWithKegs.forEach((customer, idx) => {
+      // Mock coordinates around Windsor, CT area
+      const lat = breweryLat + (Math.random() - 0.5) * 0.2;
+      const lng = breweryLng + (Math.random() - 0.5) * 0.2;
+      
+      // Custom customer icon (red circle with number)
+      const customerIcon = window.L.divIcon({
+        html: `<div style="background: #ef4444; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${idx + 1}</div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+        className: 'custom-icon'
+      });
+      
+      window.L.marker([lat, lng], { icon: customerIcon })
+        .addTo(map)
+        .bindPopup(`<strong>${customer.name}</strong><br>${customer.kegsOut} keg${customer.kegsOut !== 1 ? 's' : ''} out<br>📍 ${customer.address || 'Address on file'}`);
+    });
+    
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, [mapLoaded, customersWithKegs.length]);
+  
+  return <div ref={mapRef} style={{ width: '100%', height: '100%', borderRadius: '0.5rem' }} />;
+};
 
 const App = () => {
   const [view, setView] = useState('login'); // Start with login
@@ -1060,11 +1151,11 @@ const App = () => {
               { id: 'inventory', icon: Package, label: 'Inventory' },
               { id: 'customers', icon: Users, label: 'Customers' },
               { id: 'maintenance', icon: Wrench, label: 'Maintenance' },
-              { id: 'financial', icon: DollarSign, label: 'Financial' },
+              // { id: 'financial', icon: DollarSign, label: 'Financial' }, // Hidden
               { id: 'reports', icon: BarChart3, label: 'Reports' },
               { id: 'settings', icon: Shield, label: 'Settings' },
-              { id: 'archive', icon: Archive, label: 'Archive' },
-            ].map(tab => (
+              // { id: 'archive', icon: Archive, label: 'Archive' }, // Hidden
+            ].filter(tab => tab).map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setView(tab.id)}
@@ -1174,82 +1265,7 @@ const App = () => {
                   Customer Locations
                 </h3>
                 <div className="bg-gray-100 rounded-lg overflow-hidden relative" style={{ height: '400px' }}>
-                  {(() => {
-                    // Brewery location (Windsor, CT)
-                    const breweryLat = 41.8268;
-                    const breweryLng = -72.6686;
-                    
-                    // Get customers with kegs
-                    const customersWithKegs = customers.filter(c => c.kegsOut > 0);
-                    
-                    // Create unique map ID
-                    const mapId = 'customer-map-' + Date.now();
-                    
-                    // Initialize Leaflet map after component mounts
-                    React.useEffect(() => {
-                      // Load Leaflet library
-                      if (!window.L) {
-                        const script = document.createElement('script');
-                        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-                        script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
-                        script.crossOrigin = '';
-                        script.onload = initMap;
-                        document.head.appendChild(script);
-                      } else {
-                        initMap();
-                      }
-                      
-                      function initMap() {
-                        const mapElement = document.getElementById(mapId);
-                        if (!mapElement || mapElement._leaflet_id) return;
-                        
-                        // Create map centered on brewery
-                        const map = window.L.map(mapId).setView([breweryLat, breweryLng], 11);
-                        
-                        // Add OpenStreetMap tiles
-                        window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                          attribution: '© OpenStreetMap contributors',
-                          maxZoom: 19
-                        }).addTo(map);
-                        
-                        // Custom brewery icon (blue house)
-                        const breweryIcon = window.L.divIcon({
-                          html: '<div style="background: #2563eb; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🏠</div>',
-                          iconSize: [32, 32],
-                          iconAnchor: [16, 16],
-                          className: 'custom-icon'
-                        });
-                        
-                        // Add brewery marker
-                        window.L.marker([breweryLat, breweryLng], { icon: breweryIcon })
-                          .addTo(map)
-                          .bindPopup('<strong>Dudleytown Brewing Co.</strong><br>Windsor, CT<br>🏭 Brewery Location');
-                        
-                        // Add customer markers
-                        customersWithKegs.forEach((customer, idx) => {
-                          // Mock coordinates around Windsor, CT area
-                          const lat = breweryLat + (Math.random() - 0.5) * 0.2;
-                          const lng = breweryLng + (Math.random() - 0.5) * 0.2;
-                          
-                          // Custom customer icon (red circle with number)
-                          const customerIcon = window.L.divIcon({
-                            html: `<div style="background: #ef4444; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${idx + 1}</div>`,
-                            iconSize: [28, 28],
-                            iconAnchor: [14, 14],
-                            className: 'custom-icon'
-                          });
-                          
-                          window.L.marker([lat, lng], { icon: customerIcon })
-                            .addTo(map)
-                            .bindPopup(`<strong>${customer.name}</strong><br>${customer.kegsOut} keg${customer.kegsOut !== 1 ? 's' : ''} out<br>📍 ${customer.address || 'Address on file'}`);
-                        });
-                      }
-                    }, [customersWithKegs.length]);
-                    
-                    return (
-                      <div id={mapId} style={{ width: '100%', height: '100%', borderRadius: '0.5rem' }} />
-                    );
-                  })()}
+                  <CustomerMap customers={customers} />
                 </div>
                 <div className="mt-4 space-y-2 max-h-48 overflow-y-auto">
                   {/* Brewery Location */}
@@ -1858,7 +1874,7 @@ const App = () => {
                       <div>
                         <h3 className="text-xl font-bold">{c.name}</h3>
                         <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-1 ${
-                          c.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                          c.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                         }`}>
                           {c.status}
                         </span>
@@ -1895,19 +1911,20 @@ const App = () => {
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <div className="bg-blue-50 p-4 rounded-lg text-center">
                       <p className="text-3xl font-bold text-blue-600">{c.kegsOut}</p>
                       <p className="text-sm text-gray-600">Kegs Out</p>
                     </div>
-                    <div className="bg-green-50 p-4 rounded-lg text-center">
+                    {/* Hidden: Deposits and Balance Due */}
+                    {/* <div className="bg-green-50 p-4 rounded-lg text-center">
                       <p className="text-3xl font-bold text-green-600">${c.depositBalance}</p>
                       <p className="text-sm text-gray-600">Deposits</p>
                     </div>
                     <div className="bg-purple-50 p-4 rounded-lg text-center">
                       <p className="text-3xl font-bold text-purple-600">${c.currentBalance}</p>
                       <p className="text-sm text-gray-600">Balance Due</p>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 
@@ -2451,7 +2468,6 @@ const App = () => {
                           <td className="text-center py-3 px-4">
                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                               c.status === 'Active' ? 'bg-green-100 text-green-700' :
-                              c.status === 'Warning' ? 'bg-yellow-100 text-yellow-700' :
                               'bg-red-100 text-red-700'
                             }`}>
                               {c.status}
@@ -3185,7 +3201,7 @@ const App = () => {
                   id="shipCustomer" 
                   className="w-full px-4 py-3 border-2 rounded-lg focus:border-black focus:outline-none"
                 >
-                  {customers.map(c => (
+                  {customers.filter(c => c.status === 'Active').map(c => (
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
                 </select>
@@ -3945,8 +3961,7 @@ const App = () => {
                     className="w-full px-3 py-2 border-2 rounded-lg focus:border-black focus:outline-none text-sm"
                   >
                     <option>Active</option>
-                    <option>Warning</option>
-                    <option>Suspended</option>
+                    <option>Inactive</option>
                   </select>
                 </div>
               </div>
