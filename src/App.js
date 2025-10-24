@@ -68,6 +68,100 @@ const CryptKeeperLogo = ({ className = "h-12 w-auto" }) => (
   />
 );
 
+// Customer Map Component
+const CustomerMap = ({ customers }) => {
+  const [mapLoaded, setMapLoaded] = React.useState(false);
+  const mapRef = React.useRef(null);
+  const mapInstanceRef = React.useRef(null);
+  
+  // Brewery location (Windsor, CT)
+  const breweryLat = 41.8268;
+  const breweryLng = -72.6686;
+  
+  // Get customers with kegs
+  const customersWithKegs = customers.filter(c => c.kegsOut > 0);
+  
+  React.useEffect(() => {
+    // Load Leaflet CSS
+    if (!document.getElementById('leaflet-css')) {
+      const link = document.createElement('link');
+      link.id = 'leaflet-css';
+      link.rel = 'stylesheet';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
+      link.crossOrigin = '';
+      document.head.appendChild(link);
+    }
+    
+    // Load Leaflet library
+    if (!window.L) {
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+      script.crossOrigin = '';
+      script.onload = () => setMapLoaded(true);
+      document.head.appendChild(script);
+    } else {
+      setMapLoaded(true);
+    }
+  }, []);
+  
+  React.useEffect(() => {
+    if (!mapLoaded || !mapRef.current || mapInstanceRef.current) return;
+    
+    // Create map centered on brewery
+    const map = window.L.map(mapRef.current).setView([breweryLat, breweryLng], 11);
+    mapInstanceRef.current = map;
+    
+    // Add OpenStreetMap tiles
+    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19
+    }).addTo(map);
+    
+    // Custom brewery icon (blue house)
+    const breweryIcon = window.L.divIcon({
+      html: '<div style="background: #2563eb; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🏠</div>',
+      iconSize: [32, 32],
+      iconAnchor: [16, 16],
+      className: 'custom-icon'
+    });
+    
+    // Add brewery marker
+    window.L.marker([breweryLat, breweryLng], { icon: breweryIcon })
+      .addTo(map)
+      .bindPopup('<strong>Dudleytown Brewing Co.</strong><br>Windsor, CT<br>🏭 Brewery Location');
+    
+    // Add customer markers
+    customersWithKegs.forEach((customer, idx) => {
+      // Mock coordinates around Windsor, CT area
+      const lat = breweryLat + (Math.random() - 0.5) * 0.2;
+      const lng = breweryLng + (Math.random() - 0.5) * 0.2;
+      
+      // Custom customer icon (red circle with number)
+      const customerIcon = window.L.divIcon({
+        html: `<div style="background: #ef4444; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${idx + 1}</div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+        className: 'custom-icon'
+      });
+      
+      window.L.marker([lat, lng], { icon: customerIcon })
+        .addTo(map)
+        .bindPopup(`<strong>${customer.name}</strong><br>${customer.kegsOut} keg${customer.kegsOut !== 1 ? 's' : ''} out<br>📍 ${customer.address || 'Address on file'}`);
+    });
+    
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, [mapLoaded, customersWithKegs.length]);
+  
+  return <div ref={mapRef} style={{ width: '100%', height: '100%', borderRadius: '0.5rem' }} />;
+};
+
 const App = () => {
   const [view, setView] = useState('login'); // Start with login
   const [kegs, setKegs] = useState([]);
@@ -1171,93 +1265,7 @@ const App = () => {
                   Customer Locations
                 </h3>
                 <div className="bg-gray-100 rounded-lg overflow-hidden relative" style={{ height: '400px' }}>
-                  {(() => {
-                    // Brewery location (Windsor, CT)
-                    const breweryLat = 41.8268;
-                    const breweryLng = -72.6686;
-                    
-                    // Get customers with kegs
-                    const customersWithKegs = customers.filter(c => c.kegsOut > 0);
-                    
-                    // Create unique map ID
-                    const mapId = 'customer-map-' + Date.now();
-                    
-                    // Initialize Leaflet map after component mounts
-                    React.useEffect(() => {
-                      // Load Leaflet CSS
-                      if (!document.getElementById('leaflet-css')) {
-                        const link = document.createElement('link');
-                        link.id = 'leaflet-css';
-                        link.rel = 'stylesheet';
-                        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-                        link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
-                        link.crossOrigin = '';
-                        document.head.appendChild(link);
-                      }
-                      
-                      // Load Leaflet library
-                      if (!window.L) {
-                        const script = document.createElement('script');
-                        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-                        script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
-                        script.crossOrigin = '';
-                        script.onload = initMap;
-                        document.head.appendChild(script);
-                      } else {
-                        initMap();
-                      }
-                      
-                      function initMap() {
-                        const mapElement = document.getElementById(mapId);
-                        if (!mapElement || mapElement._leaflet_id) return;
-                        
-                        // Create map centered on brewery
-                        const map = window.L.map(mapId).setView([breweryLat, breweryLng], 11);
-                        
-                        // Add OpenStreetMap tiles
-                        window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                          attribution: '© OpenStreetMap contributors',
-                          maxZoom: 19
-                        }).addTo(map);
-                        
-                        // Custom brewery icon (blue house)
-                        const breweryIcon = window.L.divIcon({
-                          html: '<div style="background: #2563eb; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🏠</div>',
-                          iconSize: [32, 32],
-                          iconAnchor: [16, 16],
-                          className: 'custom-icon'
-                        });
-                        
-                        // Add brewery marker
-                        window.L.marker([breweryLat, breweryLng], { icon: breweryIcon })
-                          .addTo(map)
-                          .bindPopup('<strong>Dudleytown Brewing Co.</strong><br>Windsor, CT<br>🏭 Brewery Location');
-                        
-                        // Add customer markers
-                        customersWithKegs.forEach((customer, idx) => {
-                          // Mock coordinates around Windsor, CT area
-                          const lat = breweryLat + (Math.random() - 0.5) * 0.2;
-                          const lng = breweryLng + (Math.random() - 0.5) * 0.2;
-                          
-                          // Custom customer icon (red circle with number)
-                          const customerIcon = window.L.divIcon({
-                            html: `<div style="background: #ef4444; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${idx + 1}</div>`,
-                            iconSize: [28, 28],
-                            iconAnchor: [14, 14],
-                            className: 'custom-icon'
-                          });
-                          
-                          window.L.marker([lat, lng], { icon: customerIcon })
-                            .addTo(map)
-                            .bindPopup(`<strong>${customer.name}</strong><br>${customer.kegsOut} keg${customer.kegsOut !== 1 ? 's' : ''} out<br>📍 ${customer.address || 'Address on file'}`);
-                        });
-                      }
-                    }, [customersWithKegs.length]);
-                    
-                    return (
-                      <div id={mapId} style={{ width: '100%', height: '100%', borderRadius: '0.5rem' }} />
-                    );
-                  })()}
+                  <CustomerMap customers={customers} />
                 </div>
                 <div className="mt-4 space-y-2 max-h-48 overflow-y-auto">
                   {/* Brewery Location */}
