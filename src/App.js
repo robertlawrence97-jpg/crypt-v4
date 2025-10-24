@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Package, Truck, Users, BarChart3, Search, Plus, MapPin, AlertCircle, Check, X, Edit, Trash2, Save, QrCode, Home, FileText, Clock, DollarSign, TrendingUp, Filter, Download, Calendar, Wrench, Bell, TrendingDown, Archive, RefreshCw, Shield, Activity, Target, Layers, Cloud, Upload } from 'lucide-react';
+import { Camera, Package, Truck, Users, BarChart3, Search, Plus, MapPin, AlertCircle, Check, X, Edit, Trash2, Save, QrCode, Home, FileText, Clock, DollarSign, TrendingUp, Filter, Download, Calendar, Wrench, Bell, TrendingDown, Archive, RefreshCw, Shield, Activity, Target, Layers, Cloud, Upload, LogOut } from 'lucide-react';
 import { BrowserMultiFormatReader } from '@zxing/library';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, addDoc, serverTimestamp, query, orderBy, deleteDoc } from 'firebase/firestore';
@@ -428,6 +428,26 @@ const App = () => {
                 setScannedBarcodeForInventory(barcodeText);
                 stopCam();
                 setScan(false);
+              } else if (modal === 'scanBarcode' && sel) {
+                // Scanning to assign barcode to specific keg: auto-update and close
+                console.log(`📊 Auto-updating barcode for ${sel.id} to "${barcodeText}"`);
+                
+                // Check if barcode is already used by another keg
+                const existingKeg = kegs.find(k => k.barcode === barcodeText && k.id !== sel.id);
+                if (existingKeg) {
+                  setErr(`Barcode ${barcodeText} is already assigned to ${existingKeg.id}`);
+                  return;
+                }
+                
+                // Update the keg with new barcode
+                const updatedKeg = { ...sel, barcode: barcodeText };
+                setKegs(kegs.map(k => k.id === sel.id ? updatedKeg : k));
+                saveKegToFirebase(updatedKeg);
+                
+                // Close scanner and go back
+                stopCam();
+                setModal('editBarcode');
+                setErr('');
               } else {
                 // Normal mode: close camera and show manage modal
                 stopCam();
@@ -456,10 +476,15 @@ const App = () => {
     const k = kegs.find(x => x.barcode === code);
     if (k) {
       if (batchMode) {
-        // Batch mode: add to selection, don't close camera
-        if (!selectedKegs.includes(k.id)) {
-          setSelectedKegs([...selectedKegs, k.id]);
-        }
+        // Batch mode: add to selection using functional update, don't close camera
+        setSelectedKegs(prev => {
+          if (!prev.includes(k.id)) {
+            console.log('✅ Adding', k.id, 'to batch. Current batch:', prev);
+            return [...prev, k.id];
+          }
+          console.log('⚠️ Keg', k.id, 'already in batch');
+          return prev;
+        });
         setErr('');
       } else {
         // Normal mode: open trans modal (transaction/manage modal)
@@ -661,7 +686,9 @@ const App = () => {
             location: 'Brewery',
             returnDate: now, 
             daysOut: 0,
-            condition: data.condition || k.condition
+            condition: data.condition || k.condition,
+            turnsThisYear: k.turnsThisYear + 1,
+            lastCleaned: now
           };
         }
         if (type === 'clean') {
@@ -1976,6 +2003,27 @@ const App = () => {
                     Change Password
                   </button>
                 </div>
+                
+                <div className="flex items-center justify-between p-4 bg-red-50 border-2 border-red-200 rounded-lg">
+                  <div>
+                    <p className="font-semibold text-red-700">Logout</p>
+                    <p className="text-sm text-red-600">Sign out of your account</p>
+                  </div>
+                  <button 
+                    onClick={() => {
+                      if (confirm('Are you sure you want to logout?')) {
+                        // In production, this would clear Firebase auth session
+                        alert('Logout functionality will be implemented with Firebase Authentication');
+                        // For now, just redirect to login page or refresh
+                        window.location.reload();
+                      }
+                    }}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2 font-semibold"
+                  >
+                    <LogOut size={18} />
+                    Logout
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -2464,9 +2512,11 @@ const App = () => {
                     <div className="absolute -top-2 -right-2 w-16 h-16 border-t-8 border-r-8 border-red-400 rounded-tr-xl"></div>
                     <div className="absolute -bottom-2 -left-2 w-16 h-16 border-b-8 border-l-8 border-red-400 rounded-bl-xl"></div>
                     <div className="absolute -bottom-2 -right-2 w-16 h-16 border-b-8 border-r-8 border-red-400 rounded-br-xl"></div>
-                    <p className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white bg-black bg-opacity-60 px-4 py-2 rounded-lg font-bold">
-                      {vid.current?.srcObject ? 'Align Barcode' : 'Starting Camera...'}
-                    </p>
+                    {!vid.current?.srcObject && (
+                      <p className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white bg-black bg-opacity-60 px-4 py-2 rounded-lg font-bold">
+                        Starting Camera...
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -2551,16 +2601,6 @@ const App = () => {
               >
                 <RefreshCw size={20} />
                 Process Return
-              </button>
-              <button 
-                onClick={() => {
-                  console.log('🧼 Clean button clicked for keg:', sel.id);
-                  processTrans('clean', {});
-                }} 
-                className="w-full px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold flex items-center justify-center gap-2"
-              >
-                <Check size={20} />
-                Clean & Inspect
               </button>
               <button 
                 onClick={() => {
