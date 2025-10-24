@@ -3774,52 +3774,31 @@
     </div>
   )}
 
-  {/* Floating Quick Action Button */}
-  {view === 'inventory' && !bulkSelectMode && !batchMode && (
-    <div className="fixed bottom-8 right-8 z-40">
-      {quickActionMenu && (
-        <div className="absolute bottom-20 right-0 bg-white rounded-xl shadow-2xl p-3 space-y-2 mb-2">
-          <button 
-            onClick={() => { setModal('addKeg'); setQuickActionMenu(false); }}
-            className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 w-full text-left font-semibold"
-          >
-            <Plus size={20} />
-            <span>Add Keg</span>
-          </button>
-          <button 
-            onClick={() => { setScan(true); setQuickActionMenu(false); }}
-            className="flex items-center gap-3 px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 w-full text-left font-semibold"
-          >
-            <Camera size={20} />
-            <span>Scan Barcode</span>
-          </button>
-          <button 
-            onClick={() => { setBatchMode(true); setQuickActionMenu(false); }}
-            className="flex items-center gap-3 px-4 py-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 w-full text-left font-semibold"
-          >
-            <Layers size={20} />
-            <span>Batch Mode</span>
-          </button>
-          <button 
-            onClick={() => { exportData('inventory'); setQuickActionMenu(false); }}
-            className="flex items-center gap-3 px-4 py-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 w-full text-left font-semibold"
-          >
-            <Download size={20} />
-            <span>Export Data</span>
-          </button>
-        </div>
-      )}
-      <button 
-        onClick={() => setQuickActionMenu(!quickActionMenu)}
-        className="w-16 h-16 bg-blue-600 text-white rounded-full shadow-2xl hover:bg-blue-700 flex items-center justify-center transition-transform hover:scale-110"
-      >
-        {quickActionMenu ? <X size={28} /> : <Plus size={28} />}
-      </button>   
-        <div>
-      )}
-        
-   </div>
-  );
-};
-
-export default App;
+{/* Floating Quick Action Button */} 
+{view === 'inventory' && !bulkSelectMode && !batchMode && (
+  <div className="fixed bottom-8 right-8 z-40">
+    {quickActionMenu && (
+      <div className="absolute bottom-20 right-0 bg-white rounded-xl shadow-2xl p-3 space-y-2 mb-2">
+        <button onClick={() => { setModal('addKeg'); setQuickActionMenu(false); }} className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 w-full text-left font-semibold" >
+          <Plus size={20} />
+          <span>Add Keg</span>
+        </button>
+        <button onClick={() => { setScan(true); setQuickActionMenu(false); }} className="flex items-center gap-3 px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 w-full text-left font-semibold" >
+          <Camera size={20} />
+          <span>Scan Barcode</span>
+        </button>
+        <button onClick={() => { setBatchMode(true); setQuickActionMenu(false); }} className="flex items-center gap-3 px-4 py-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 w-full text-left font-semibold" >
+          <Layers size={20} />
+          <span>Batch Mode</span>
+        </button>
+        <button onClick={() => { exportData('inventory'); setQuickActionMenu(false); }} className="flex items-center gap-3 px-4 py-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 w-full text-left font-semibold" >
+          <Download size={20} />
+          <span>Export Data</span>
+        </button>
+      </div>
+    )}
+    <button onClick={() => setQuickActionMenu(!quickActionMenu)} className="w-16 h-16 bg-blue-600 text-white rounded-full shadow-2xl hover:bg-blue-700 flex items-center justify-center transition-transform hover:scale-110" >
+      {quickActionMenu ? <X size={28} /> : <Plus size={28} />}
+    </button>
+  </div> // <-- Add this closing div tag
+)}
